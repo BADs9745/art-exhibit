@@ -10,7 +10,16 @@ const config: Config = {
 		"./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
 	],
 	theme: {
-		extend: {},
+		extend: {
+			colors: {
+				space: {
+					1: "#1B262C",
+					2: "#0F4C75",
+					3: "#3282B8",
+					4: "#BBE1FA",
+				},
+			},
+		},
 	},
 	plugins: [nextui()],
 };

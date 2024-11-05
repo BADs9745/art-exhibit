@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import SearchBar from "./searchBar";
 import { motion, type Variant } from "framer-motion";
 import ProfileAvatar from "./profileAvatar";
+import { jockeOne } from "@fonts/font";
 
 type navType = {
 	navtxt: string;
@@ -60,24 +61,28 @@ export default function Navbar() {
 			left: position,
 			opacity: opacity,
 			width: width,
-			transition: { duration: duration },
+			transition: { duration: duration, ease: [0.43, 0.13, 0.23, 0.96] },
 		},
 	};
 	const clickHandler = () => {
-		setDuration(0.3);
+		setDuration(0.7);
 	};
 
 	return (
 		<nav
 			className={clsx(
-				"flex pt-10 pb-2 px-3 border-b-2 border-white sticky top-0 w-screen z-10 bg-slate-950",
+				"flex pt-10 pb-2 px-3 border-b-1 border-space-4 sticky top-0 w-screen z-10 bg-space-1 bg-cover",
 			)}
 		>
-			<h1 className="text-4xl text-white m-4 font-semibold cursor-default">
-				ArtSpace
+			<h1
+				className={`text-5xl text-white m-4 font-semibold cursor-default ${jockeOne.className} uppercase`}
+			>
+				ARTSPACE
 			</h1>
-			{/* Divider */}
-			<div className="w-0.5 my-1 mx-5 bg-white" />
+			<div
+				className="w-1 my-1 mx-5 bg-white"
+				// Divider
+			/>
 			<ul
 				className="flex relative mx-5 items-center"
 				onMouseEnter={clickHandler}
@@ -88,7 +93,7 @@ export default function Navbar() {
 					animate={"slider"}
 					initial={"slider"}
 					key={"Navbar Cursor"}
-					className={"absolute h-12 bg-blue-100 z-[1] rounded"}
+					className={"absolute h-12 bg-space-4 z-[1] rounded"}
 				/>
 				{navItem.map((nav, index) => {
 					return (
@@ -100,15 +105,14 @@ export default function Navbar() {
 							}}
 						>
 							<Link href={nav.href} className={""}>
-								<div
-									className={clsx(
-										"font-medium w-auto mx-1 flex items-center px-10 py-3 justify-center rounded duration-300 relative hover:border-b-8 border-transparent z-[2]",
-										{
-											"text-black": route === nav.href,
-										},
-									)}
-								>
-									{nav.navtxt}
+								<div className="w-auto mx-1 flex items-center px-10 py-3 justify-center rounded bg-clip-text duration-300 relative hover:border-b-8 border-transparent z-[2] text-lg font-semibold uppercase">
+									<span
+										className={clsx("delay-300 duration-300", {
+											"text-space-1": route === nav.href,
+										})}
+									>
+										{nav.navtxt}
+									</span>
 								</div>
 							</Link>
 						</li>

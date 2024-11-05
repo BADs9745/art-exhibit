@@ -22,7 +22,6 @@ model Pengguna {
   no_telepon       BigInt?
   dibuat_pada      DateTime       @default(now())
   diperbarui_pada  DateTime       @updatedAt
-  type             TypePengguna   @default(NORMAL)
   profil_seniman   ProfilSeniman? @relation(fields: [profil_SenimanId], references: [id])
   profil_SenimanId String?
   Transaksi        Transaksi[]
@@ -30,6 +29,7 @@ model Pengguna {
   pesan_dikirim    Pesan[]        @relation("pengirim")
   pesan_diterima   Pesan[]        @relation("penerima")
   login_token      String?        @unique
+  foto_profil      String?
 }
 
 enum Peran {
@@ -48,12 +48,6 @@ model ProfilSeniman {
   Pengguna   Pengguna[]
   KaryaSeni  KaryaSeni[] @relation("main_artist")
   Collab     KaryaSeni[] @relation("collab_artist")
-}
-
-enum TypePengguna {
-  NORMAL
-  ARTIST
-  ADMIN
 }
 
 model KaryaSeni {

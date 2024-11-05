@@ -7,7 +7,7 @@ import { SignIn } from "../action";
 import { useState } from "react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import WarningnIcon from "@/icons/warning";
-
+import { jockeOne } from "@/fonts/font";
 type formField = {
 	email: string;
 	password: string;
@@ -30,9 +30,16 @@ export default function ProfileSignInPage() {
 
 	return (
 		<section className="flex flex-col justify-center items-center w-screen h-screen overflow-scroll">
-			<h1 className="text-7xl font-semibold text-slate-200 text-center">
-				Login
+			<h1
+				className={`text-7xl font-semibold text-slate-200 text-center ${jockeOne.className}`}
+			>
+				ARTSPACE
 			</h1>
+			<h2
+				className={`text-5xl mt-10 font-semibold text-slate-200 text-center ${jockeOne.className}`}
+			>
+				Login
+			</h2>
 			<form
 				className="m-10 justify-center space-y-10 *:w-96"
 				onSubmit={handleSubmit(Submit)}
@@ -51,7 +58,7 @@ export default function ProfileSignInPage() {
 					</Alert>
 				)}
 
-				<Button className="bg-blue-300 p-5" type="submit">
+				<Button className="bg-space-2 p-6 text-xl text-space-4" type="submit">
 					Sign In
 				</Button>
 				<div className="px-3">

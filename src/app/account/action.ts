@@ -2,8 +2,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import type { Register } from "./signup/page";
-// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
@@ -69,12 +68,13 @@ export async function SignIn({
 		};
 	}
 	prisma.$disconnect();
+	const loginToken = randomUUID();
 	const token = await prisma.pengguna.update({
 		where: {
 			email: email,
 		},
 		data: {
-			login_token: createHash("sha256").update(res.id).digest("base64"),
+			login_token: createHash("sha256").update(loginToken).digest("base64"),
 		},
 		select: {
 			login_token: true,
@@ -102,7 +102,6 @@ export const UserProfile = async (login_token: string) => {
 			nama: true,
 			email: true,
 			peran: true,
-			type: true,
 		},
 	});
 	return profileData;

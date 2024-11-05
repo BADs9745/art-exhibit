@@ -11,3 +11,13 @@ export const geistMono = LocalFont({
 	variable: "--font-geist-mono",
 	weight: "100 900",
 });
+
+export const jockeOne = LocalFont({
+	src: [
+		{
+			path: "./JockeyOne.ttf",
+			weight: "400",
+			style: "normal",
+		},
+	],
+});

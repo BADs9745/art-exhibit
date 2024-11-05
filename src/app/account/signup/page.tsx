@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { IsEmailTaken, SignUp } from "../action";
 import { useDebouncedCallback } from "use-debounce";
+import { jockeOne } from "@/fonts/font";
 
 export type Register = {
 	name: string;
@@ -24,26 +25,28 @@ export default function ProfileSignUpPage() {
 	const [isChecked, setIsChecked] = useState(false);
 	const [termReminder, setTermReminder] = useState(false);
 	async function Submit(data: Register) {
-		if (isChecked) {
-			await SignUp(data);
-		}
 		if (!isChecked) {
 			setTermReminder(true);
+			return;
 		}
+		await SignUp(data);
 	}
 
 	const emailCallback = useDebouncedCallback(async (input) => {
 		const isTaken = await IsEmailTaken(input);
 		setTaken(isTaken);
-		console.log(isTaken, input);
 	}, 500);
 
 	return (
 		<section className="flex flex-col justify-center items-center w-screen h-screen overflow-scroll">
-			<h1 className="text-5xl m-4 text-white font-semibold cursor-default">
+			<h1
+				className={`text-7xl m-4 text-space-4 font-semibold cursor-default ${jockeOne.className}`}
+			>
 				ArtSpace
 			</h1>
-			<h1 className="text-3xl m-3 font-semibold text-slate-300 text-center">
+			<h1
+				className={`text-3xl m-3 font-semibold text-space-4 text-center ${jockeOne.className}`}
+			>
 				Register
 			</h1>
 			<form
@@ -154,7 +157,9 @@ export default function ProfileSignUpPage() {
 							setTermReminder(!value);
 						}}
 					>
-						<span className="text-white">Agreement Term and Service</span>
+						<span className="text-space-4 font-semibold text-medium">
+							Agreement Term and Service
+						</span>
 					</Checkbox>
 					{termReminder && (
 						<p className="text-red-500">
@@ -165,11 +170,18 @@ export default function ProfileSignUpPage() {
 				<div className="flex justify-end">
 					<div className="w-full">
 						Already Have Account try to{" "}
-						<Link href={"/account/signin"} className="text-blue-300">
+						<Link
+							href={"/account/signin"}
+							className="text-space-3 font-bold text-lg"
+						>
 							Sign In
 						</Link>
 					</div>
-					<Button className="scale-105 bg-blue-300" type="submit">
+					<Button
+						className="bg-space-4 text-xl font-bold text-space-1"
+						size="lg"
+						type="submit"
+					>
 						Sign Up
 					</Button>
 				</div>

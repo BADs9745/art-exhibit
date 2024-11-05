@@ -1,7 +1,7 @@
 "use client";
 import { IsLogin, LogOut, UserProfile } from "@/app/account/action";
 import PersonIcon from "@/icons/person";
-import type { $Enums } from "@prisma/client";
+import type { $Enums, Pengguna } from "@prisma/client";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,7 +9,6 @@ type profileData = {
 	peran: $Enums.Peran;
 	nama: string;
 	email: string;
-	type: $Enums.TypePengguna;
 };
 
 export default function ProfileDropdown() {
@@ -18,25 +17,21 @@ export default function ProfileDropdown() {
 		nama: "",
 		email: "",
 		peran: "PELANGGAN",
-		type: "NORMAL",
 	});
 	const handler = () => {
-		if (!dropdownItem.current?.focus()) {
-		}
 		dropdownItem.current?.focus();
 	};
 
 	useEffect(() => {
 		const getProfile = async () => {
 			const token = await IsLogin();
-			const profileData = await UserProfile(token || "");
+			const profileData = await UserProfile(token ?? "none");
 
 			setProfile(
-				profileData || {
+				profileData ?? {
 					nama: "",
 					email: "",
 					peran: "PELANGGAN",
-					type: "NORMAL",
 				},
 			);
 		};
@@ -47,7 +42,7 @@ export default function ProfileDropdown() {
 		<div className="relative group">
 			<div
 				className={
-					"flex size-12 relative rounded-full bg-slate-100 items-center justify-center hover:bg-slate-300 duration-300"
+					"flex size-12 relative rounded-full bg-space-4 items-center justify-center hover:bg-opacity-80 duration-300"
 				}
 			>
 				<button
@@ -71,17 +66,24 @@ export default function ProfileDropdown() {
 			>
 				<div
 					className={
-						"flex flex-col cursor-pointer *:rounded-xl items-start absolute top-1 p-3 right-0 *:text-sm hover:*:bg-blue-900 *:duration-300 *:p-3 space-y-2 p- w-52 duration-300 bg-blue-950 rounded-[0.5rem] *:w-full *:text-start"
+						"flex flex-col cursor-pointer *:rounded-xl items-start absolute top-1 p-3 right-0 *:text-medium *:font-semibold *:duration-300 *:p-3 space-y-2 p- w-72 duration-300 bg-space-1 mt-2 ring-space-4 ring-1 rounded-[0.5rem] *:w-full *:text-start"
 					}
 				>
-					<div>{profile.email}</div>
-					<div>{profile.nama}</div>
-					<div>{profile.peran}</div>
-					<div>{profile.type}</div>
-					<div>Bookmark</div>
-					<div>Notification</div>
+					<div className="hover:bg-space-3 hover:text-space-1">
+						<div className="capitalize text-xl">
+							{profile.nama.toLowerCase()}
+							<p className="text-sm">{profile.email}</p>
+							<p className="text-lg font-bold">
+								{profile.peran.toLocaleLowerCase()}
+							</p>
+						</div>
+					</div>
+					<div className="hover:bg-space-3 hover:text-space-1">Bookmark</div>
+					<div className="hover:bg-space-3 hover:text-space-1">
+						Notification
+					</div>
 					<div
-						className="text-red-500"
+						className="text-red-500 hover:bg-red-500 hover:text-white"
 						onKeyDown={() => {}}
 						onClick={() => {
 							LogOut();
