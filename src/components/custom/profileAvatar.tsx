@@ -9,7 +9,7 @@ const notLogin: ReactNode = (
 	<Link
 		href={"/account/signin"}
 		key={"SignIn"}
-		className="hover:bg-space-4 hover:text-space-4 transition-all duration-300 rounded py-2 px-4"
+		className="hover:bg-space-4 hover:text-space-1 transition-all duration-300 rounded py-2 px-4"
 	>
 		{"Login / Sign Up"}
 	</Link>

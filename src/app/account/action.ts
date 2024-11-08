@@ -95,6 +95,10 @@ export async function IsLogin() {
 	return cookies().get("login_token")?.value;
 }
 
+export const ToMyProfile = () => {
+	redirect("/account/profile");
+};
+
 export const UserProfile = async (login_token: string) => {
 	const profileData = await prisma.pengguna.findUnique({
 		where: { login_token: login_token },

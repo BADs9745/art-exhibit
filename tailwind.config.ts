@@ -11,6 +11,21 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			animation: {
+				"spin-3": "spin 3s linear infinite",
+				wiggle: "wiggle 3s linear infinite",
+				beat: "beat 500ms ease-in-out infinite alternate",
+			},
+			keyframes: {
+				beat: {
+					to: { transform: "scale(1.25)" },
+				},
+				wiggle: {
+					"0%": { transform: "rotateX(0deg)" },
+					"50%": { transform: "rotateX(3deg)" },
+					"100%": { transform: "rotateX(-3deg)" },
+				},
+			},
 			colors: {
 				space: {
 					1: "#1B262C",

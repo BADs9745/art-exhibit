@@ -1,7 +1,15 @@
 "use client";
-import { IsLogin, LogOut, UserProfile } from "@/app/account/action";
+import {
+	IsLogin,
+	LogOut,
+	ToMyProfile,
+	UserProfile,
+} from "@/app/account/action";
+import BookmarkFillIcon from "@/icons/bookmark-fill";
+import NotificationFillIcon from "@/icons/notification-fill";
 import PersonIcon from "@/icons/person";
-import type { $Enums, Pengguna } from "@prisma/client";
+import SettingIcon from "@/icons/setting";
+import type { $Enums } from "@prisma/client";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
@@ -66,21 +74,32 @@ export default function ProfileDropdown() {
 			>
 				<div
 					className={
-						"flex flex-col cursor-pointer *:rounded-xl items-start absolute top-1 p-3 right-0 *:text-medium *:font-semibold *:duration-300 *:p-3 space-y-2 p- w-72 duration-300 bg-space-1 mt-2 ring-space-4 ring-1 rounded-[0.5rem] *:w-full *:text-start"
+						"flex flex-col cursor-pointer *:rounded-xl items-start absolute top-1 p-3 right-0 *:text-medium *:font-semibold *:duration-300 *:p-3 space-y-2 p- w-72 duration-300 bg-space-2 mt-2 rounded-[0.5rem] *:w-full *:text-start"
 					}
 				>
-					<div className="hover:bg-space-3 hover:text-space-1">
-						<div className="capitalize text-xl">
-							{profile.nama.toLowerCase()}
-							<p className="text-sm">{profile.email}</p>
-							<p className="text-lg font-bold">
+					<div
+						className="hover:bg-space-3 hover:text-space-1 capitalize group/profile"
+						onClick={() => {
+							ToMyProfile();
+						}}
+						onKeyDown={() => {}}
+					>
+						{profile.nama.toLowerCase()}
+						<p className="text-sm">{profile.email}</p>
+						<div className="flex items-center">
+							<p className="text-lg font-bold flex-1">
 								{profile.peran.toLocaleLowerCase()}
 							</p>
+							<SettingIcon className="group-hover/profile:animate-spin-3 fill-space-4 group-hover/profile:fill-space-1" />
 						</div>
 					</div>
-					<div className="hover:bg-space-3 hover:text-space-1">Bookmark</div>
-					<div className="hover:bg-space-3 hover:text-space-1">
-						Notification
+					<div className="hover:bg-space-3 hover:text-space-1 flex group/bookmarks">
+						<span className="flex-1">Bookmark</span>{" "}
+						<BookmarkFillIcon className=" group-hover/profile:fill-space-1 fill-space-4 group-hover/bookmarks:fill-space-1 group-hover/bookmarks:animate-beat" />
+					</div>
+					<div className="hover:bg-space-3 hover:text-space-1 group/notifications flex">
+						<span className="flex-1">Notification</span>{" "}
+						<NotificationFillIcon className="fill-space-4 group-hover/notifications:fill-space-1 group-hover/notifications:animate-wiggle" />
 					</div>
 					<div
 						className="text-red-500 hover:bg-red-500 hover:text-white"

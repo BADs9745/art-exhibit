@@ -10,6 +10,7 @@ export async function POST(request: Request) {
 	const data = await request.formData();
 	const file = data.get("file") as File;
 	const fileName = data.get("name") as string;
+	const files = data.getAll("files") as File[];
 	const fileBuffer = await file.arrayBuffer();
 	const imgBuffer = Buffer.from(fileBuffer);
 	console.log(UPLOAD_DIR);
@@ -17,5 +18,13 @@ export async function POST(request: Request) {
 		if (err) throw err;
 		console.log("Saved!");
 	});
+
+	for (const img of files) {
+		const buffer = Buffer.from(await img.arrayBuffer());
+		fs.writeFile(`${UPLOAD_DIR}/${img.name}.jpg`, buffer, (err) => {
+			if (err) throw err;
+			console.log("Saved!");
+		});
+	}
 	return Response.json({ message: "Hello, World!" });
 }
