@@ -1,6 +1,7 @@
 "use client";
 import { LogOut, ToMyProfile, UserProfile } from "@/app/account/action";
 import BookmarkFillIcon from "@/icons/bookmark-fill";
+import LogOutIcon from "@/icons/logout";
 import NotificationFillIcon from "@/icons/notification-fill";
 import PersonIcon from "@/icons/person";
 import SettingIcon from "@/icons/setting";
@@ -89,20 +90,21 @@ export default function ProfileDropdown() {
 					</div>
 					<div className="hover:bg-space-3 hover:text-space-1 flex group/bookmarks">
 						<span className="flex-1">Bookmark</span>{" "}
-						<BookmarkFillIcon className=" group-hover/profile:fill-space-1 fill-space-4 group-hover/bookmarks:fill-space-1 group-hover/bookmarks:animate-beat" />
+						<BookmarkFillIcon className=" group-hover/profile:fill-space-1 fill-space-4 group-hover/bookmarks:fill-space-1 group-hover/bookmarks:animate-shake" />
 					</div>
 					<div className="hover:bg-space-3 hover:text-space-1 group/notifications flex">
 						<span className="flex-1">Notification</span>{" "}
 						<NotificationFillIcon className="fill-space-4 group-hover/notifications:fill-space-1 group-hover/notifications:animate-wiggle" />
 					</div>
 					<div
-						className="text-red-500 hover:bg-red-500 hover:text-white"
+						className="text-red-500 hover:bg-red-500 hover:text-white flex group/logout"
 						onKeyDown={() => {}}
 						onClick={() => {
 							LogOut();
 						}}
 					>
-						Log Out
+						<span className="flex-1">Log Out</span>
+						<LogOutIcon className="fill-red-500 group-hover/logout:fill-white group-hover/logout" />
 					</div>
 				</div>
 			</div>

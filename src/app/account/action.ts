@@ -125,6 +125,7 @@ export async function GetProfileData() {
 			foto_profil: true,
 		},
 	});
+
 	return myProfile;
 }
 

@@ -1,22 +1,25 @@
 import LocalFont from "next/font/local";
 
-export const geistSans = LocalFont({
-	src: "./GeistVF.woff",
-	variable: "--font-geist-sans",
-	weight: "variable",
-});
-
-export const geistMono = LocalFont({
-	src: "./GeistMonoVF.woff",
-	variable: "--font-geist-mono",
-	weight: "100 900",
-});
-
 export const jockeOne = LocalFont({
+	src: "./JockeyOne.ttf",
+	variable: "--font-jockey-one",
+});
+
+export const kreon = LocalFont({
+	src: "./Kreon.ttf",
+	variable: "--font-kreon",
+});
+
+export const montserrat = LocalFont({
 	src: [
 		{
-			path: "./JockeyOne.ttf",
-			weight: "400",
+			path: "Montserrat-Italic-VariableFont_wght.ttf",
+			weight: "100 900",
+			style: "italic",
+		},
+		{
+			path: "Montserrat-VariableFont_wght.ttf",
+			weight: "100 900",
 			style: "normal",
 		},
 	],

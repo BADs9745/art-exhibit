@@ -29,7 +29,7 @@ model Pengguna {
   pesan_dikirim    Pesan[]        @relation("pengirim")
   pesan_diterima   Pesan[]        @relation("penerima")
   login_token      String?        @unique
-  foto_profil      String?
+  foto_profil      Bytes?
 }
 
 enum Peran {
@@ -125,4 +125,9 @@ model Pesan {
   penerimaId   String
   isi_pesan    String
   dikirim_pada DateTime @default(now())
+}
+
+model File {
+  id   String @id @default(cuid())
+  file Bytes
 }

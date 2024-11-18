@@ -13,17 +13,19 @@ const config: Config = {
 		extend: {
 			animation: {
 				"spin-3": "spin 3s linear infinite",
-				wiggle: "wiggle 3s linear infinite",
-				beat: "beat 500ms ease-in-out infinite alternate",
+				wiggle: "wiggle 500ms cubic-bezier(0.4, 0, 0.2, 1) infinite alternate",
+				shake: "shake 500ms ease-in-out infinite alternate",
 			},
 			keyframes: {
-				beat: {
-					to: { transform: "scale(1.25)" },
+				shake: {
+					0: { transform: "translateY(0px)" },
+					"50%": { transform: "translateY(3px)" },
+					"100%": { transform: "translateY(-3px)" },
 				},
 				wiggle: {
 					"0%": { transform: "rotateZ(0deg)" },
-					"50%": { transform: "rotateZ(3deg)" },
-					"100%": { transform: "rotateZ(-3deg)" },
+					"50%": { transform: "rotateZ(20deg)" },
+					"100%": { transform: "rotateZ(-20deg)" },
 				},
 			},
 			colors: {

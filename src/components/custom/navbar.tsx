@@ -84,16 +84,15 @@ export default function Navbar() {
 				// Divider
 			/>
 			<ul
-				className="flex relative mx-5 items-center"
+				className={`${jockeOne.className} flex relative mx-5 items-center`}
 				onMouseEnter={clickHandler}
 			>
 				<motion.div
 					// Navbar Cursor
 					variants={sliderVariants}
 					animate={"slider"}
-					initial={"slider"}
 					key={"Navbar Cursor"}
-					className={"absolute h-12 bg-space-4 z-[1] rounded"}
+					className={"absolute h-12 bg-space-4 z-[1] rounded-sm"}
 				/>
 				{navItem.map((nav, index) => {
 					return (
@@ -105,7 +104,10 @@ export default function Navbar() {
 							}}
 						>
 							<Link href={nav.href} className={""}>
-								<div className="w-auto mx-1 flex items-center px-10 py-3 justify-center rounded bg-clip-text duration-300 relative hover:border-b-8 border-transparent z-[2] text-lg font-semibold uppercase">
+								<div
+									className="w-auto mx-1 flex items-center px-10 py-3 justify-center bg-clip-text duration-300 relative border-b-2
+								 hover:border-space-4 hover:translate-y-1 border-transparent z-[2] text-xl font-semibold uppercase"
+								>
 									<span
 										className={clsx("delay-300 duration-300", {
 											"text-space-1": route === nav.href,
