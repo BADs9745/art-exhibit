@@ -39,15 +39,16 @@ enum Peran {
 }
 
 model ProfilSeniman {
-  id         String      @id @default(cuid())
-  nama       String
-  biografi   String
-  deskripsi  String
-  dibuat     DateTime    @default(now())
-  diperbarui DateTime    @updatedAt
-  Pengguna   Pengguna[]
-  KaryaSeni  KaryaSeni[] @relation("main_artist")
-  Collab     KaryaSeni[] @relation("collab_artist")
+  id               String      @id @default(cuid())
+  nama             String
+  biografi         String
+  deskripsi        String
+  dibuat           DateTime    @default(now())
+  diperbarui       DateTime    @updatedAt
+  Pengguna         Pengguna[]
+  KaryaSeni        KaryaSeni[] @relation("main_artist")
+  Collab           KaryaSeni[] @relation("collab_artist")
+  Background_Image Bytes?
 }
 
 model KaryaSeni {
