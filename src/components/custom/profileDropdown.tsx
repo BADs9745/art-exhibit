@@ -1,10 +1,5 @@
 "use client";
-import {
-	IsLogin,
-	LogOut,
-	ToMyProfile,
-	UserProfile,
-} from "@/app/account/action";
+import { LogOut, ToMyProfile, UserProfile } from "@/app/account/action";
 import BookmarkFillIcon from "@/icons/bookmark-fill";
 import NotificationFillIcon from "@/icons/notification-fill";
 import PersonIcon from "@/icons/person";
@@ -32,8 +27,7 @@ export default function ProfileDropdown() {
 
 	useEffect(() => {
 		const getProfile = async () => {
-			const token = await IsLogin();
-			const profileData = await UserProfile(token ?? "none");
+			const profileData = await UserProfile();
 
 			setProfile(
 				profileData ?? {

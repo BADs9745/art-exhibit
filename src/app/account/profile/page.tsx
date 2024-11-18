@@ -1,3 +1,3 @@
 export default function MyProfilePage() {
-	return <>My Profile</>;
+	return <section>sd</section>;
 }

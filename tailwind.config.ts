@@ -21,9 +21,9 @@ const config: Config = {
 					to: { transform: "scale(1.25)" },
 				},
 				wiggle: {
-					"0%": { transform: "rotateX(0deg)" },
-					"50%": { transform: "rotateX(3deg)" },
-					"100%": { transform: "rotateX(-3deg)" },
+					"0%": { transform: "rotateZ(0deg)" },
+					"50%": { transform: "rotateZ(3deg)" },
+					"100%": { transform: "rotateZ(-3deg)" },
 				},
 			},
 			colors: {

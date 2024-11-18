@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
 
-export const SignUp = async (data: Register) => {
+export async function SignUp(data: Register) {
 	const hashPassword = createHash("sha256")
 		.update(data.password)
 		.digest("base64");
@@ -41,7 +41,7 @@ export const SignUp = async (data: Register) => {
 		redirect("/account/signin");
 	}
 	return success;
-};
+}
 export async function IsEmailTaken(email: string): Promise<boolean> {
 	return (await prisma.pengguna.findUnique({ where: { email } })) !== null;
 }
@@ -95,11 +95,12 @@ export async function IsLogin() {
 	return cookies().get("login_token")?.value;
 }
 
-export const ToMyProfile = () => {
+export async function ToMyProfile() {
 	redirect("/account/profile");
-};
+}
 
-export const UserProfile = async (login_token: string) => {
+export async function UserProfile() {
+	const login_token = await IsLogin();
 	const profileData = await prisma.pengguna.findUnique({
 		where: { login_token: login_token },
 		select: {
@@ -109,4 +110,32 @@ export const UserProfile = async (login_token: string) => {
 		},
 	});
 	return profileData;
-};
+}
+
+export async function GetProfileData() {
+	const login_token = await IsLogin();
+	const prisma = new PrismaClient();
+	const myProfile = await prisma.pengguna.findUnique({
+		where: { login_token: login_token },
+		select: {
+			nama: true,
+			email: true,
+			peran: true,
+			no_telepon: true,
+			foto_profil: true,
+		},
+	});
+	return myProfile;
+}
+
+export async function ProfilePicture() {
+	const login_token = await IsLogin();
+	const prisma = new PrismaClient();
+	const myProfile = await prisma.pengguna.findUnique({
+		where: { login_token: login_token },
+		select: {
+			foto_profil: true,
+		},
+	});
+	return myProfile;
+}
