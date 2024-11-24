@@ -4,23 +4,24 @@ import { useEffect, useState } from "react";
 import { GetProfileData } from "../action";
 import { $Enums } from "@prisma/client";
 import { jockeOne } from "@/fonts/font";
-import { MyButton as Button } from "@/components/custom/myButton";
-import { Input } from "@nextui-org/input";
 import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
+import clsx from "clsx";
+import { UpdateDialog } from "./components/updateDialog";
+import Image from "next/image";
+import PersonIcon from "@/icons/person";
 
 type DataPengguna = {
 	nama: string;
 	email: string;
 	peran: $Enums.Peran;
-	no_telepon: bigint | null;
+	no_telepon?: bigint | null;
 };
 const dataObject = {
 	nama: "",
 	email: "",
 	peran: $Enums.Peran.PELANGGAN,
 	no_telepon: null,
-	foto_profil: null,
 };
 const profileCard: Variants = {
 	init: {
@@ -31,8 +32,7 @@ const profileParent: Variants = {
 	init: {
 		opacity: 1,
 		width: 700,
-		color: "#BBE1FA",
-		backgroundColor: "rgb(15 76 117 / 0.1 )",
+		backgroundColor: "rgb(15 76 117 / 0)",
 		transition: {
 			duration: 1,
 			type: "spring",
@@ -62,15 +62,26 @@ export default function MyProfilePage() {
 		no_telepon: null,
 		peran: $Enums.Peran.PELANGGAN,
 	});
+	const [profilePic, setProfilePic] = useState<string>("");
 
 	useEffect(() => {
 		const Profile = async () => {
 			const data = await GetProfileData();
-			console.log(data);
 			setProfileData(data ?? dataObject);
-			console.log(data);
 		};
 		Profile();
+
+		const getProfilePic = async () => {
+			const data = await fetch("/account/profile/api/get/picture", {
+				method: "GET",
+				cache: "no-cache",
+			});
+			const blob = await data.blob();
+			const url = URL.createObjectURL(blob);
+			setProfilePic(url);
+		};
+
+		getProfilePic();
 	}, []);
 
 	return (
@@ -89,45 +100,69 @@ export default function MyProfilePage() {
 						className="flex flex-col space-y-7 flex-1"
 						variants={profileCard}
 					>
-						{FieldData("Nama", profileData.nama)}
 						{FieldData("Email", profileData.email)}
-						{FieldData("No Telepon", profileData.no_telepon ?? "")}
+						{FieldData("Nama", profileData.nama)}
+						{FieldData(
+							"No Telepon",
+							profileData.no_telepon ?? "Belum ada data",
+						)}
 					</motion.div>
 					<motion.div initial={{ x: 500 }} variants={profilePicture}>
 						<Link
-							href={"#"}
-							className="size-80 me-10 flex items-center justify-center rounded-full bg-red-500"
+							href={"./profile/update/profilepicture"}
+							className="size-80 me-10 flex items-center justify-center bg-space-4 text-space-4 group overflow-clip rounded-full relative border-2 border-space-1"
 						>
-							Profile
+							<Image
+								src={profilePic}
+								width={320}
+								height={320}
+								aria-hidden
+								alt=""
+								className="absolute text-3xl size-80 flex items-center justify-center z-[1]"
+							/>
+							<PersonIcon className="absolute size-52 fill-space-1/70" />
+							<div className="bg-space-2 w-full text-center self-end pt-3 pb-7 font-semibold opacity-0 group-hover:opacity-100 duration-250 bottom-0 z-[2]">
+								Edit Profile Picture
+							</div>
 						</Link>
 					</motion.div>
 				</motion.div>
 			</main>
-			{/* <div>
-				<h1 className="text-3xl font-bold p-10 bg-space-2 max-w-[700px] rounded">
-					Update Profile
-				</h1>
-			</div> */}
 		</section>
 	);
 }
-function FieldData(label: string, fieldData: string | bigint) {
+const FieldData = (label: string, fieldData: string | bigint) => {
 	return (
 		<motion.div
-			key={"profile-data-field"}
 			initial={{ opacity: 0, width: 0 }}
 			variants={profileParent}
-			className="p-5 flex items-center bg-space-2 rounded-xl"
+			className="p-1 flex items-center bg-space-2 rounded-xl overflow-clip"
 		>
 			<div className="gap-3 w-full flex flex-col">
 				<div>{label}</div>
-				<div className="w-full flex-1 font-semibold text-xl">
+				<motion.div
+					key={fieldData.toString()}
+					className={clsx(
+						"w-full flex-1 font-semibold text-xl text-clip overflow-clip text-nowrap",
+						{ "text-red-500": fieldData === "Belum ada data" },
+					)}
+					initial={{
+						width: "0%",
+					}}
+					animate={{
+						width: "100%",
+					}}
+				>
 					{fieldData.toString()}
-				</div>
+				</motion.div>
 			</div>
-			<Button color="space3" radius="sm">
-				Change
-			</Button>
+			{label !== "Email" && (
+				<UpdateDialog
+					className="bg-space-1"
+					label={label}
+					val={fieldData.toString()}
+				/>
+			)}
 		</motion.div>
 	);
-}
+};

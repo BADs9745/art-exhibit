@@ -6,8 +6,9 @@ type ListSetting = [string, string];
 const profilepath = "/account/profile";
 
 const listSetting: ListSetting[] = [
-	["General", "/"],
-	["Seniman", "/seniman"],
+	["Dashboard", "/"],
+	["General", `${profilepath}/`],
+	["Seniman", `${profilepath}/seniman`],
 ];
 
 export default function ProfileSideBard() {
@@ -18,7 +19,7 @@ export default function ProfileSideBard() {
 				{listSetting.map(([key, value]) => (
 					<Link
 						key={key}
-						href={`${profilepath}${value}`}
+						href={`${value}`}
 						className={clsx(
 							"text-space-4 hover:text-space-3 duration-300 w-full py-3 text-lg text-nowrap text-start border-s-3 border-transparent hover:border-space-3 hover:indent-7 indent-4",
 						)}

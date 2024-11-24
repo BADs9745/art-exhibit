@@ -6,9 +6,9 @@ import { createHash, randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
-const prisma = new PrismaClient();
-
 export async function SignUp(data: Register) {
+	const prisma = new PrismaClient();
+
 	const hashPassword = createHash("sha256")
 		.update(data.password)
 		.digest("base64");
@@ -42,8 +42,13 @@ export async function SignUp(data: Register) {
 	}
 	return success;
 }
-export async function IsEmailTaken(email: string): Promise<boolean> {
-	return (await prisma.pengguna.findUnique({ where: { email } })) !== null;
+export async function IsEmailTaken(emailchk: string): Promise<boolean> {
+	const prisma = new PrismaClient();
+
+	const condition =
+		(await prisma.pengguna.findFirst({ where: { email: emailchk } })) !== null;
+	prisma.$disconnect();
+	return condition;
 }
 
 export async function SignIn({
@@ -52,6 +57,8 @@ export async function SignIn({
 }: { email: string; password: string }): Promise<{
 	isSuccess: boolean;
 }> {
+	const prisma = new PrismaClient();
+
 	const hashPassword = createHash("sha256").update(password).digest("base64");
 	const res = await prisma.pengguna.findFirst({
 		where: {
@@ -100,6 +107,8 @@ export async function ToMyProfile() {
 }
 
 export async function UserProfile() {
+	const prisma = new PrismaClient();
+
 	const login_token = await IsLogin();
 	const profileData = await prisma.pengguna.findUnique({
 		where: { login_token: login_token },
@@ -122,7 +131,6 @@ export async function GetProfileData() {
 			email: true,
 			peran: true,
 			no_telepon: true,
-			foto_profil: true,
 		},
 	});
 

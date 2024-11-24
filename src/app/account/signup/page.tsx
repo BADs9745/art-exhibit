@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { IsEmailTaken, SignUp } from "../action";
-import { useDebouncedCallback } from "use-debounce";
 import { jockeOne } from "@/fonts/font";
 
 export type Register = {
@@ -19,23 +18,20 @@ export type Register = {
 };
 
 export default function ProfileSignUpPage() {
-	const [password, setPassword] = useState<string>("");
-	const [isTaken, setTaken] = useState(false);
-	const form = useForm<Register>({});
-	const [isChecked, setIsChecked] = useState(false);
 	const [termReminder, setTermReminder] = useState(false);
+	const { register, handleSubmit, getValues } = useForm<Register>({});
+	const [isTaken, setTaken] = useState(false);
 	async function Submit(data: Register) {
-		if (!isChecked) {
-			setTermReminder(true);
-			return;
+		console.log(data.agreement);
+		if (await IsEmailTaken(data.email)) {
+			setTaken(true);
+		} else {
+			setTaken(false);
 		}
-		await SignUp(data);
+		if (!isTaken) {
+			await SignUp(data);
+		}
 	}
-
-	const emailCallback = useDebouncedCallback(async (input) => {
-		const isTaken = await IsEmailTaken(input);
-		setTaken(isTaken);
-	}, 500);
 
 	return (
 		<section className="flex flex-col justify-center items-center w-screen h-screen overflow-scroll">
@@ -51,10 +47,12 @@ export default function ProfileSignUpPage() {
 			</h1>
 			<form
 				className="m-5 min-w-fit w-[30vw] justify-center rounded-3xl space-y-7"
-				onSubmit={form.handleSubmit(Submit)}
+				onSubmit={handleSubmit(Submit, () => {
+					setTermReminder(true);
+				})}
 			>
 				<Input
-					{...form.register("name", { required: true })}
+					{...register("name", { required: true })}
 					isRequired
 					type="text"
 					label="Name"
@@ -69,55 +67,40 @@ export default function ProfileSignUpPage() {
 						}
 					}}
 				/>
-				{form.formState.errors.name && (
-					<p className="text-red-500">{form.formState.errors.name.message}</p>
-				)}
 				<Input
-					{...form.register("email", { required: true })}
+					{...register("email", { required: true })}
 					isRequired
 					validationBehavior="native"
-					errorMessage={(result) => {
-						if (result.validationDetails.typeMismatch) {
-							return "Email is Invalid";
-						}
-						if (result.validationDetails.valueMissing) {
+					errorMessage={(email) => {
+						if (email.validationDetails.valueMissing) {
 							return "Email is Required";
 						}
-						if (result.validationDetails.customError) {
-							return "Email has been used";
+						if (email.validationDetails.typeMismatch) {
+							return "Invalid Email";
+						}
+						if (email.validationDetails.customError) {
+							return "This Email address already been used";
 						}
 					}}
+					isInvalid={isTaken}
 					type="email"
 					label="Email"
-					validate={() => {
-						if (isTaken) {
-							return "Email has been used";
-						}
-						return true;
-					}}
-					onChange={(e) => {
-						emailCallback(e.target.value.toLowerCase());
-					}}
 				/>
 
 				<Input
-					{...form.register("phone")}
+					{...register("phone")}
 					minLength={11}
-					maxLength={13}
 					validationBehavior="native"
 					errorMessage={(phone) => {
 						if (phone.validationDetails.tooShort) {
 							return "Phone Number too Short at Least 11 Digits";
-						}
-						if (phone.validationDetails.tooLong) {
-							return "Phone Number too Long at Most 13 Digits";
 						}
 					}}
 					type="number"
 					label="Phone Number"
 				/>
 				<Input
-					{...form.register("password", { required: true })}
+					{...register("password", { required: true })}
 					type="password"
 					label="Password"
 					validationBehavior="native"
@@ -131,29 +114,28 @@ export default function ProfileSignUpPage() {
 						}
 					}}
 					isRequired
-					onChange={(e) => {
-						setPassword(e.target.value);
-					}}
 				/>
 				<Input
-					{...form.register("confirmPassword")}
+					{...register("confirmPassword")}
 					type="password"
 					label="Confirm Password"
 					validationBehavior="native"
 					validate={(value) => {
-						if (value !== password) {
+						if (value !== getValues("password")) {
 							return "Password Does Not Match";
 						}
 						return true;
 					}}
+					errorMessage={(validate) => {
+						return validate.validationErrors;
+					}}
 				/>
 				<div>
 					<Checkbox
-						{...form.register("agreement", { required: true })}
+						{...register("agreement", { required: true })}
 						color="primary"
 						radius="md"
 						onValueChange={(value) => {
-							setIsChecked(value);
 							setTermReminder(!value);
 						}}
 					>
@@ -178,7 +160,7 @@ export default function ProfileSignUpPage() {
 						</Link>
 					</div>
 					<Button
-						className="bg-space-4 text-xl font-bold text-space-1"
+						className="bg-space-4 font-semibold text-space-1"
 						size="lg"
 						type="submit"
 					>
