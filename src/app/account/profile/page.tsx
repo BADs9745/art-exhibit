@@ -10,12 +10,18 @@ import clsx from "clsx";
 import { UpdateDialog } from "./components/updateDialog";
 import Image from "next/image";
 import PersonIcon from "@/icons/person";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { MyButton } from "@/components/custom/myButton";
+import { EditIcon, SaveIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 type DataPengguna = {
 	nama: string;
 	email: string;
 	peran: $Enums.Peran;
 	no_telepon?: bigint | null;
+	biodata?: string | null;
 };
 const dataObject = {
 	nama: "",
@@ -55,6 +61,11 @@ const profilePicture: Variants = {
 	},
 };
 
+type bioGraphState = {
+	input: boolean;
+	button: "Edit" | "Save";
+};
+
 export default function MyProfilePage() {
 	const [profileData, setProfileData] = useState<DataPengguna>({
 		nama: "",
@@ -63,6 +74,11 @@ export default function MyProfilePage() {
 		peran: $Enums.Peran.PELANGGAN,
 	});
 	const [profilePic, setProfilePic] = useState<string>("");
+	const [bioGraphState, setBioGraphState] = useState<bioGraphState>({
+		input: false,
+		button: "Edit",
+	});
+	const { register } = useForm<DataPengguna>();
 
 	useEffect(() => {
 		const Profile = async () => {
@@ -83,7 +99,6 @@ export default function MyProfilePage() {
 
 		getProfilePic();
 	}, []);
-
 	return (
 		<section className="px-20 overflow-hidden">
 			<header className="py-10 bg-space-1">
@@ -127,6 +142,30 @@ export default function MyProfilePage() {
 						</Link>
 					</motion.div>
 				</motion.div>
+				<div className="">
+					<Label htmlFor="bio-data">Bio Data</Label>
+					<Textarea
+						className={"bg-space-2/30 border-space-4/10 h-56 "}
+						id="bio-data"
+						disabled={bioGraphState.input}
+						{...register("biodata")}
+					/>
+					<div className="flex mt-5 gap-5">
+						<MyButton
+							color="space2"
+							className="font-semibold text-base px-10"
+							onClick={() => {
+								setBioGraphState((value) => ({
+									input: !value.input,
+									button: value.input ? "Save" : "Edit",
+								}));
+							}}
+						>
+							{bioGraphState.button}{" "}
+							{bioGraphState.input ? <EditIcon /> : <SaveIcon />}
+						</MyButton>
+					</div>
+				</div>
 			</main>
 		</section>
 	);

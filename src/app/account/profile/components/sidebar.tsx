@@ -8,7 +8,7 @@ const profilepath = "/account/profile";
 const listSetting: ListSetting[] = [
 	["Dashboard", "/"],
 	["General", `${profilepath}/`],
-	["Seniman", `${profilepath}/seniman`],
+	["Maestro", `${profilepath}/seniman`],
 ];
 
 export default function ProfileSideBard() {

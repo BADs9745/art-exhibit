@@ -136,15 +136,3 @@ export async function GetProfileData() {
 
 	return myProfile;
 }
-
-export async function ProfilePicture() {
-	const login_token = await IsLogin();
-	const prisma = new PrismaClient();
-	const myProfile = await prisma.pengguna.findUnique({
-		where: { login_token: login_token },
-		select: {
-			foto_profil: true,
-		},
-	});
-	return myProfile;
-}

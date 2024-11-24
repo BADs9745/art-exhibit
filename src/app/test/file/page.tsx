@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -41,8 +42,12 @@ export default function GetFilePage() {
 					Upload File
 				</button>
 			</form>
-
-			<img src={imgUrl} alt="idk" className="rounded-full" />
+			<Image
+				style={{ width: "100px", height: "100px" }}
+				src={imgUrl}
+				alt="idk"
+				className="rounded-full"
+			/>
 		</>
 	);
 }

@@ -33,7 +33,7 @@ export const UpdateDialog = ({
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button color="space2" className="text-medium font-semibold">
+				<Button color="space2" className="font-semibold">
 					Edit <EditIcon />
 				</Button>
 			</DialogTrigger>
