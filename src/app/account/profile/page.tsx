@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { MyButton } from "@/components/custom/myButton";
 import { EditIcon, SaveIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { AvatarPicture } from "@/components/custom/profile";
 
 type DataPengguna = {
 	nama: string;
@@ -110,6 +111,7 @@ export default function MyProfilePage() {
 				<h2>General Setting your profile Data</h2>
 			</header>
 			<main>
+				<AvatarPicture userId="cm34s6vzd0000vfmkunfx3hvb" />
 				<motion.div animate={"init"} className="flex w-full">
 					<motion.div
 						className="flex flex-col space-y-7 flex-1"
@@ -145,7 +147,9 @@ export default function MyProfilePage() {
 				<div className="">
 					<Label htmlFor="bio-data">Bio Data</Label>
 					<Textarea
-						className={"bg-space-2/30 border-space-4/10 h-56 "}
+						className={
+							"bg-space-2/30 border-space-4/10 h-56 disabled:bg-space-2/10"
+						}
 						id="bio-data"
 						disabled={bioGraphState.input}
 						{...register("biodata")}

@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
-import ProfileDropdown from "./profileDropdown";
 import { IsLogin } from "@/app/account/action";
+import { AvatarMenuDropdown } from "./profile";
 
-const login: ReactNode = <ProfileDropdown />;
+const login: ReactNode = <AvatarMenuDropdown />;
 const notLogin: ReactNode = (
 	<Link
 		href={"/account/signin"}

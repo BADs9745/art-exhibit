@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { EditIcon, SaveIcon } from "lucide-react";
-import { Input } from "@nextui-org/input";
 import { useForm } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
 import { MyButton as Button } from "@/components/custom/myButton";
-import { UpdateProfile } from "../update/action";
+import { Redirect, UpdateProfile } from "../update/action";
 import { useState, type HTMLAttributes } from "react";
 import LoadingIcon from "@/icons/loadingIcon";
+import { Input } from "@/components/ui/input";
 export const UpdateDialog = ({
 	label,
 	val,
@@ -29,6 +29,7 @@ export const UpdateDialog = ({
 	const [loading, setLoading] = useState(false);
 	const handleSave = useDebouncedCallback((data: string) => {
 		UpdateProfile(label, data);
+		Redirect("./profile");
 	}, 1250);
 	return (
 		<Dialog>
@@ -53,8 +54,7 @@ export const UpdateDialog = ({
 							id="name"
 							defaultValue={val}
 							type={label === "No Telepon" ? "number" : "text"}
-							validationBehavior="native"
-							className="col-span-3 text-space-1"
+							className="col-span-3 text-space-4 bg-space-2/30"
 							{...register(label)}
 						/>
 					</div>

@@ -27,8 +27,7 @@ export const UpdateProfile = async (label: string, data: string) => {
 		});
 	}
 	prisma.$disconnect();
-	Redirect();
 };
-export async function Redirect() {
-	redirect("/account/profile/", RedirectType.replace);
+export async function Redirect(url: string) {
+	redirect(url, RedirectType.replace);
 }

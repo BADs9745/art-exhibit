@@ -102,10 +102,6 @@ export async function IsLogin() {
 	return cookies().get("login_token")?.value;
 }
 
-export async function ToMyProfile() {
-	redirect("/account/profile");
-}
-
 export async function UserProfile() {
 	const prisma = new PrismaClient();
 
@@ -118,6 +114,7 @@ export async function UserProfile() {
 			peran: true,
 		},
 	});
+	prisma.$disconnect();
 	return profileData;
 }
 

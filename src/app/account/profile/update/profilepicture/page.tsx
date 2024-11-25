@@ -32,7 +32,7 @@ export default function ProfilePicturePage() {
 
 		const res = await fetch(req);
 		if (res.status === 200) {
-			Redirect();
+			Redirect("/account/profile");
 		}
 	};
 
