@@ -20,6 +20,7 @@ model Pengguna {
   email            String         @unique
   kata_sandi       String
   no_telepon       BigInt?
+  biograph         String?
   dibuat_pada      DateTime       @default(now())
   diperbarui_pada  DateTime       @updatedAt
   profil_seniman   ProfilSeniman? @relation(fields: [profil_SenimanId], references: [id])
@@ -41,7 +42,7 @@ enum Peran {
 model ProfilSeniman {
   id               String      @id @default(cuid())
   nama             String
-  biografi         String
+  biografi         String?
   deskripsi        String
   dibuat           DateTime    @default(now())
   diperbarui       DateTime    @updatedAt

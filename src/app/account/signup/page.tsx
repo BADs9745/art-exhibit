@@ -5,8 +5,8 @@ import { Checkbox } from "@nextui-org/checkbox";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { IsEmailTaken, SignUp } from "../action";
 import { jockeOne } from "@/fonts/font";
+import { IsEmailTaken, SignUp } from "@/util/account/profile/action";
 
 export type Register = {
 	name: string;

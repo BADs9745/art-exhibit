@@ -14,8 +14,9 @@ import {
 import SettingIcon from "@/icons/setting";
 import { BookmarkIcon, LogOut as LogoutIcon } from "lucide-react";
 import Link from "next/link";
-import { LogOut, UserProfile } from "@/app/account/action";
 import NotificationFillIcon from "@/icons/notification-fill";
+import { LogOut, UserProfile } from "@/util/account/profile/action";
+import clsx from "clsx";
 
 type avatarMenuData = {
 	peran: $Enums.Peran;
@@ -34,7 +35,7 @@ export const AvatarPicture = ({ userId }: { userId?: string }) => {
 
 	useEffect(() => {
 		const GetAvatarImage = async () => {
-			const imgData = await fetch(`/account/profile/api/get/picture${params}`, {
+			const imgData = await fetch(`/api/account/profile/picture${params}`, {
 				method: "GET",
 			});
 			const blob = await imgData.blob();
@@ -75,11 +76,19 @@ export const AvatarMenuDropdown = () => {
 			<DropdownMenuTrigger>
 				<AvatarPicture />
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-52 bg-space-2">
+			<DropdownMenuContent className="w-52 bg-space-2/50 cursor-default">
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
 				<DropdownMenuGroup>
 					<DropdownMenuLabel className="group">
-						{profile.nama}
+						{profile.nama}{" "}
+						<span
+							className={clsx(
+								{ "animate-admin-badge text-black": profile.peran === "ADMIN" },
+								{ "text-space-4": profile.peran === "PELANGGAN" },
+							)}
+						>
+							{profile.peran}
+						</span>
 					</DropdownMenuLabel>
 				</DropdownMenuGroup>{" "}
 				<DropdownMenuSeparator />
@@ -112,7 +121,7 @@ export const AvatarMenuDropdown = () => {
 						onClick={() => {
 							LogOut();
 						}}
-						className="hover:text-red-500 hover:bg-space-3"
+						className="hover:text-red-500 hover:bg-space-1"
 					>
 						<LogoutIcon />
 						<span>Log Out</span>

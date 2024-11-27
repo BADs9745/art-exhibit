@@ -3,11 +3,11 @@ import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import Link from "next/link";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { SignIn } from "../action";
 import { useState } from "react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import WarningnIcon from "@/icons/warning";
 import { jockeOne } from "@/fonts/font";
+import { SignIn } from "@/util/account/profile/action";
 type formField = {
 	email: string;
 	password: string;

@@ -2,7 +2,8 @@
 import { useForm } from "react-hook-form";
 import { MyButton as Button } from "@/components/custom/myButton";
 import { useRef } from "react";
-import { Redirect } from "../action";
+import { UserRoundPlus } from "lucide-react";
+import { Redirect } from "@/util/account/profile/update/action";
 
 type Data = {
 	[key: string]: FileList | string;
@@ -25,7 +26,7 @@ export default function ProfilePicturePage() {
 			formData.append("image", data.image[0]);
 		}
 
-		const req = new Request("/account/profile/update/profilepicture/api", {
+		const req = new Request("/api/account/profile/picture/", {
 			method: "POST",
 			body: formData,
 		});
@@ -44,7 +45,7 @@ export default function ProfilePicturePage() {
 					className="p-10 flex items-center flex-col"
 					onSubmit={handleSubmit(onSubmit)}
 				>
-					<label htmlFor="image">
+					<label htmlFor="image" className="flex items-center justify-center">
 						<input
 							type="file"
 							id="image"
@@ -52,9 +53,9 @@ export default function ProfilePicturePage() {
 							className="bg-space-2/30 hidden"
 							{...register("image")}
 						/>
-
+						<UserRoundPlus className="size-[200px] absolute self-center" />
 						<div
-							className="size-[500px] bg-space-2/30 rounded-full bg-cover bg-center"
+							className="size-[500px] bg-space-2/10 rounded-full bg-cover bg-center z-10"
 							ref={preview}
 						/>
 					</label>

@@ -1,5 +1,5 @@
+import ProfileSideBard from "@/components/custom/profile/sidebar";
 import type { ReactNode } from "react";
-import ProfileSideBard from "./components/sidebar";
 
 export default function ProfileTemplate({ children }: { children: ReactNode }) {
 	return (

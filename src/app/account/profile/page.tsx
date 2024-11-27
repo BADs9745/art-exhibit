@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { GetProfileData } from "../action";
 import { $Enums } from "@prisma/client";
 import { jockeOne } from "@/fonts/font";
 import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import clsx from "clsx";
-import { UpdateDialog } from "./components/updateDialog";
 import Image from "next/image";
 import PersonIcon from "@/icons/person";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,20 +13,24 @@ import { Label } from "@/components/ui/label";
 import { MyButton } from "@/components/custom/myButton";
 import { EditIcon, SaveIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { AvatarPicture } from "@/components/custom/profile";
+import { Input } from "@/components/ui/input";
+import { UpdateProfile } from "@/util/account/profile/update/action";
+import { GetProfileData } from "@/util/account/profile/action";
+import { useDebouncedCallback } from "use-debounce";
 
 type DataPengguna = {
 	nama: string;
 	email: string;
 	peran: $Enums.Peran;
 	no_telepon?: bigint | null;
-	biodata?: string | null;
+	biograph?: string | null;
 };
 const dataObject = {
 	nama: "",
 	email: "",
 	peran: $Enums.Peran.PELANGGAN,
 	no_telepon: null,
+	biodata: "",
 };
 const profileCard: Variants = {
 	init: {
@@ -73,13 +75,17 @@ export default function MyProfilePage() {
 		email: "",
 		no_telepon: null,
 		peran: $Enums.Peran.PELANGGAN,
+		biograph: "",
 	});
 	const [profilePic, setProfilePic] = useState<string>("");
 	const [bioGraphState, setBioGraphState] = useState<bioGraphState>({
 		input: false,
 		button: "Edit",
 	});
-	const { register } = useForm<DataPengguna>();
+	const UpdateDebounce = useDebouncedCallback((label: string, data: string) => {
+		UpdateProfile(label, data);
+	}, 3000);
+	const { register, getValues } = useForm<DataPengguna>();
 
 	useEffect(() => {
 		const Profile = async () => {
@@ -89,7 +95,7 @@ export default function MyProfilePage() {
 		Profile();
 
 		const getProfilePic = async () => {
-			const data = await fetch("/account/profile/api/get/picture", {
+			const data = await fetch("/api/account/profile/picture/", {
 				method: "GET",
 				cache: "no-cache",
 			});
@@ -102,27 +108,36 @@ export default function MyProfilePage() {
 	}, []);
 	return (
 		<section className="px-20 overflow-hidden">
-			<header className="py-10 bg-space-1">
+			<motion.header
+				className="py-10 bg-space-1 overflow-clip text-nowrap"
+				initial={{
+					width: 0,
+					opacity: 0,
+				}}
+				animate={{
+					width: "fit-content",
+					opacity: 1,
+				}}
+			>
 				<h1
 					className={`text-3xl font-semibold text-space-4 ${jockeOne.className}`}
 				>
 					MY PROFILE
 				</h1>
 				<h2>General Setting your profile Data</h2>
-			</header>
+			</motion.header>
 			<main>
-				<AvatarPicture userId="cm34s6vzd0000vfmkunfx3hvb" />
 				<motion.div animate={"init"} className="flex w-full">
 					<motion.div
 						className="flex flex-col space-y-7 flex-1"
 						variants={profileCard}
 					>
-						{FieldData("Email", profileData.email)}
-						{FieldData("Nama", profileData.nama)}
-						{FieldData(
-							"No Telepon",
-							profileData.no_telepon ?? "Belum ada data",
-						)}
+						<FieldData label="Email" fieldData={profileData.email} />
+						<FieldData label="Nama" fieldData={profileData.nama} />
+						<FieldData
+							label="No Telepon"
+							fieldData={profileData.no_telepon ?? "Belum ada data"}
+						/>
 					</motion.div>
 					<motion.div initial={{ x: 500 }} variants={profilePicture}>
 						<Link
@@ -144,42 +159,73 @@ export default function MyProfilePage() {
 						</Link>
 					</motion.div>
 				</motion.div>
-				<div className="">
-					<Label htmlFor="bio-data">Bio Data</Label>
+				<motion.div
+					className="my-10"
+					initial={{
+						height: 0,
+						opacity: 0,
+					}}
+					animate={{
+						height: "fit-content",
+						opacity: 1,
+						transition: {
+							delay: 1,
+							duration: 0.5,
+						},
+					}}
+				>
+					<Label htmlFor="bio-graph">Bio Data</Label>
 					<Textarea
 						className={
 							"bg-space-2/30 border-space-4/10 h-56 disabled:bg-space-2/10"
 						}
-						id="bio-data"
-						disabled={bioGraphState.input}
-						{...register("biodata")}
+						id="bio-graph"
+						disabled={!bioGraphState.input}
+						defaultValue={profileData.biograph?.toString()}
+						{...register("biograph", { required: false })}
 					/>
 					<div className="flex mt-5 gap-5">
 						<MyButton
 							color="space2"
-							className="font-semibold text-base px-10"
+							className="font-semibold"
 							onClick={() => {
+								if (bioGraphState.input) {
+									UpdateDebounce(
+										"BioGraph",
+										getValues("biograph")?.toString() ?? "",
+									);
+								}
 								setBioGraphState((value) => ({
 									input: !value.input,
-									button: value.input ? "Save" : "Edit",
+									button: !value.input ? "Save" : "Edit",
 								}));
 							}}
 						>
 							{bioGraphState.button}{" "}
-							{bioGraphState.input ? <EditIcon /> : <SaveIcon />}
+							{!bioGraphState.input ? <EditIcon /> : <SaveIcon />}
 						</MyButton>
 					</div>
-				</div>
+				</motion.div>
 			</main>
 		</section>
 	);
 }
-const FieldData = (label: string, fieldData: string | bigint) => {
+const FieldData = ({
+	label,
+	fieldData,
+}: { label: string; fieldData: string | bigint }) => {
+	const [disabled, setDisabled] = useState(true);
+	const { register, getValues } = useForm();
+	const [loading, setLoading] = useState(false);
+	const UpdateDebounce = useDebouncedCallback((label: string, data: string) => {
+		UpdateProfile(label, data);
+		setLoading(false);
+	}, 3000);
 	return (
 		<motion.div
 			initial={{ opacity: 0, width: 0 }}
 			variants={profileParent}
-			className="p-1 flex items-center bg-space-2 rounded-xl overflow-clip"
+			className="p-1 flex items-center bg-space-2 rounded-xl overflow-clip gap-5"
 		>
 			<div className="gap-3 w-full flex flex-col">
 				<div>{label}</div>
@@ -196,15 +242,68 @@ const FieldData = (label: string, fieldData: string | bigint) => {
 						width: "100%",
 					}}
 				>
-					{fieldData.toString()}
+					<motion.div
+						className={clsx("rounded-md", {
+							"bg-gradient-to-r from-space-4/10": loading,
+						})}
+						animate={{
+							backgroundPositionX: "1000px",
+							transition: {
+								duration: 5,
+								repeat: Number.POSITIVE_INFINITY,
+								ease: "linear",
+							},
+						}}
+					>
+						{label === "Email" ? (
+							fieldData.toString()
+						) : (
+							<Input
+								className="disabled:bg-space-2/10 bg-space-2 duration-300"
+								defaultValue={fieldData.toString()}
+								disabled={disabled}
+								{...register(label)}
+							/>
+						)}
+					</motion.div>
 				</motion.div>
 			</div>
 			{label !== "Email" && (
-				<UpdateDialog
-					className="bg-space-1"
-					label={label}
-					val={fieldData.toString()}
-				/>
+				<MyButton
+					color="space2"
+					className="font-semibold self-end overflow-clip"
+					onClick={() => {
+						if (!disabled) {
+							setLoading(true);
+							UpdateDebounce(label, getValues(label));
+						}
+						setDisabled(!disabled);
+					}}
+				>
+					{!loading ? (
+						!disabled ? (
+							<>
+								Save <SaveIcon />
+							</>
+						) : (
+							<>
+								Edit <EditIcon />
+							</>
+						)
+					) : (
+						<motion.div
+							className="h-full flex items-center justify-center bg-gradient-to-r from-space-1 to-space-4 bg-clip-text"
+							animate={{
+								backgroundPositionX: "1000px",
+								transition: {
+									duration: 10,
+								},
+							}}
+						>
+							Updating ...
+						</motion.div>
+					)}
+				</MyButton>
 			)}
 		</motion.div>
 	);

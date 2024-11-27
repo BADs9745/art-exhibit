@@ -1,10 +1,10 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import type { Register } from "./signup/page";
 import { createHash, randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import type { Register } from "@/app/account/signup/page";
 
 export async function SignUp(data: Register) {
 	const prisma = new PrismaClient();
@@ -128,6 +128,7 @@ export async function GetProfileData() {
 			email: true,
 			peran: true,
 			no_telepon: true,
+			biograph: true,
 		},
 	});
 
