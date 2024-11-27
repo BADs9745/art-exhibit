@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { $Enums } from "@prisma/client";
 import { jockeOne } from "@/fonts/font";
-import { motion, type Variants } from "framer-motion";
+import { motion, type Variants } from "motion/react";
 import Link from "next/link";
 import clsx from "clsx";
 import Image from "next/image";
