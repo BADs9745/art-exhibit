@@ -1,3 +1,3 @@
 export default function DashboardHomePage() {
-	return <>DashBoard</>;
+	return <>DashBoard of Master Branch</>;
 }
