@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import SearchBar from "./searchBar";
 import { motion, type Variant } from "framer-motion";
 import ProfileAvatar from "./profileAvatar";
-import { jockeOne } from "@fonts/font";
+import { jockeOne, kreon } from "@fonts/font";
 
 type navType = {
 	navtxt: string;
@@ -84,7 +84,7 @@ export default function Navbar() {
 				// Divider
 			/>
 			<ul
-				className={`${jockeOne.className} flex relative mx-5 items-center`}
+				className={`${kreon.className} flex relative mx-5 items-center`}
 				onMouseEnter={clickHandler}
 			>
 				<motion.div

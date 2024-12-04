@@ -13,7 +13,7 @@ export default function GetFilePage() {
 		};
 		GetFile();
 	}, []);
-	const [imgUrl, setUrl] = useState("");
+	const [imgUrl, setUrl] = useState("none");
 	const { register, handleSubmit, getValues } = useForm<Data>();
 
 	const Submit = async (data: Data) => {
@@ -46,6 +46,8 @@ export default function GetFilePage() {
 				style={{ width: "100px", height: "100px" }}
 				src={imgUrl}
 				alt="idk"
+				height={100}
+				width={100}
 				className="rounded-full"
 			/>
 		</>

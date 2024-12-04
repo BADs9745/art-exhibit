@@ -15,24 +15,18 @@ const config: Config = {
 				"spin-3": "spin 3s linear infinite",
 				wiggle: "wiggle 500ms cubic-bezier(0.4, 0, 0.2, 1) infinite alternate",
 				shake: "shake 500ms ease-in-out infinite alternate",
-				"admin-badge": "admin-badge 750ms ease-in-out infinite alternate",
+				"admin-badge": "admin-badge 2s linear infinite",
 			},
 			keyframes: {
 				shake: {
 					0: { transform: "translateY(0px)" },
-					"50%": { transform: "translateY(3px)" },
-					"100%": { transform: "translateY(-3px)" },
+					"50%": { transform: "translateY(1px)" },
+					"100%": { transform: "translateY(-1px)" },
 				},
 				wiggle: {
 					"0%": { transform: "rotateZ(0deg)" },
-					"50%": { transform: "rotateZ(20deg)" },
-					"100%": { transform: "rotateZ(-20deg)" },
-				},
-				"admin-badge": {
-					to: {
-						color: "white",
-						"letter-spacing": "1px",
-					},
+					"50%": { transform: "rotateZ(15deg)" },
+					"100%": { transform: "rotateZ(-15deg)" },
 				},
 			},
 			colors: {

@@ -17,6 +17,7 @@ import Link from "next/link";
 import NotificationFillIcon from "@/icons/notification-fill";
 import { LogOut, UserProfile } from "@/util/account/profile/action";
 import clsx from "clsx";
+import { useDebouncedCallback } from "use-debounce";
 
 type avatarMenuData = {
 	peran: $Enums.Peran;
@@ -27,6 +28,14 @@ type avatarMenuData = {
 export const AvatarPicture = ({ userId }: { userId?: string }) => {
 	const [profileImg, setProfileImg] = useState<string>("");
 	const searchParams = new URLSearchParams();
+	const GetAvatarImageDebounce = useDebouncedCallback(async () => {
+		const imgData = await fetch(`/api/account/profile/picture${params}`, {
+			method: "GET",
+		});
+		const blob = await imgData.blob();
+		const blobUrl = URL.createObjectURL(blob);
+		setProfileImg(blobUrl);
+	});
 	let params = "";
 	if (userId) {
 		searchParams.set("userId", userId);
@@ -34,16 +43,8 @@ export const AvatarPicture = ({ userId }: { userId?: string }) => {
 	}
 
 	useEffect(() => {
-		const GetAvatarImage = async () => {
-			const imgData = await fetch(`/api/account/profile/picture${params}`, {
-				method: "GET",
-			});
-			const blob = await imgData.blob();
-			const blobUrl = URL.createObjectURL(blob);
-			setProfileImg(blobUrl);
-		};
-		GetAvatarImage();
-	}, [params]);
+		GetAvatarImageDebounce();
+	}, [GetAvatarImageDebounce]);
 	return (
 		<Avatar className="size-12 ring-space-4 ring-1">
 			<AvatarImage alt="No Image" src={profileImg} />
@@ -57,33 +58,38 @@ export const AvatarMenuDropdown = () => {
 		email: "",
 		peran: "PELANGGAN",
 	});
-	useEffect(() => {
-		const getProfile = async () => {
-			const profile = await UserProfile();
 
-			setProfile(
-				profile ?? {
-					nama: "",
-					email: "",
-					peran: "PELANGGAN",
-				},
-			);
-		};
-		getProfile();
-	}, []);
+	const GetProfileDebounce = useDebouncedCallback(async () => {
+		const profile = await UserProfile();
+
+		setProfile(
+			profile ?? {
+				nama: "",
+				email: "",
+				peran: "PELANGGAN",
+			},
+		);
+	}, 150);
+
+	useEffect(() => {
+		GetProfileDebounce();
+	}, [GetProfileDebounce]);
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger>
 				<AvatarPicture />
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-52 bg-space-2/50 cursor-default">
+			<DropdownMenuContent className="w-52 bg-space-1 cursor-default">
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
 				<DropdownMenuGroup>
 					<DropdownMenuLabel className="group">
 						{profile.nama}{" "}
 						<span
 							className={clsx(
-								{ "animate-admin-badge text-black": profile.peran === "ADMIN" },
+								{
+									"animate-admin-badge text-transparent bg-gradient-to-r from-slate-950 to-slate-100 bg-clip-text bg-[length:200px]":
+										profile.peran === "ADMIN",
+								},
 								{ "text-space-4": profile.peran === "PELANGGAN" },
 							)}
 						>
@@ -94,7 +100,10 @@ export const AvatarMenuDropdown = () => {
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
 					<DropdownMenuItem className="group hover:bg-space-3">
-						<Link href={"/account/profile"} className="flex items-center gap-2">
+						<Link
+							href={"/account/profile"}
+							className="flex items-center gap-2 w-full"
+						>
 							<SettingIcon className="group-hover:animate-spin-3 fill-space-4 group-hover:fill-space-1" />
 							<span className="group-hover:text-space-1">Edit Profile</span>
 						</Link>
@@ -102,7 +111,7 @@ export const AvatarMenuDropdown = () => {
 					<DropdownMenuItem className="group hover:bg-space-3">
 						<Link
 							href={"/account/bookmarks"}
-							className="flex items-center gap-2"
+							className="flex items-center gap-2 w-full"
 						>
 							<BookmarkIcon className="group-hover:animate-shake fill-space-4 group-hover:fill-space-1" />
 							<span className="group-hover:text-space-1">My Bookmarks</span>
@@ -111,7 +120,7 @@ export const AvatarMenuDropdown = () => {
 					<DropdownMenuItem className="group hover:bg-space-3">
 						<Link
 							href={"/account/bookmarks"}
-							className="flex items-center gap-2"
+							className="flex items-center gap-2 w-full"
 						>
 							<NotificationFillIcon className="group-hover:animate-wiggle fill-space-4 group-hover:fill-space-1" />
 							<span className="group-hover:text-space-1">Notifications</span>

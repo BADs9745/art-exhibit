@@ -3,22 +3,42 @@
 import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
 import sharp from "sharp";
+import fs from "node:fs";
 
 export async function GET(req: Request) {
 	const prisma = new PrismaClient();
 	const { searchParams } = new URL(req.url);
 	const userId = searchParams.get("userId");
 	const token = userId ? undefined : cookies().get("login_token")?.value;
-	const bufferPic = await prisma.pengguna.findFirstOrThrow({
-		where: {
-			OR: [{ login_token: token }, { id: userId ?? undefined }],
-		},
-		select: { foto_profil: true },
-	});
-	prisma.$disconnect();
-	return new Response(bufferPic.foto_profil, {
-		headers: { "Content-Type": "image/webp" },
-	});
+	try {
+		const bufferPic = await prisma.pengguna.findFirstOrThrow({
+			where: {
+				OR: [{ login_token: token }, { id: userId ?? undefined }],
+			},
+			select: { foto_profil: true },
+		});
+		prisma.$disconnect();
+		if (bufferPic.foto_profil === null) {
+			const defaultPicture = fs.readFileSync(
+				"src/public/assets/img/default-profile-picture.jpg",
+			);
+			return new Response(defaultPicture, {
+				headers: { "Content-Type": "image/webp" },
+			});
+		}
+		return new Response(bufferPic.foto_profil, {
+			headers: { "Content-Type": "image/webp" },
+		});
+	} catch (error) {
+		if (error) {
+			const defaultPicture = fs.readFileSync(
+				"src/public/assets/img/default-profile-picture.jpg",
+			);
+			return new Response(defaultPicture, {
+				headers: { "Content-Type": "image/webp" },
+			});
+		}
+	}
 }
 
 export async function POST(req: Request) {

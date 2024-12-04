@@ -5,8 +5,9 @@ import { Checkbox } from "@nextui-org/checkbox";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { jockeOne } from "@/fonts/font";
+import { jockeOne, kreon } from "@/fonts/font";
 import { IsEmailTaken, SignUp } from "@/util/account/profile/action";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export type Register = {
 	name: string;
@@ -21,8 +22,9 @@ export default function ProfileSignUpPage() {
 	const [termReminder, setTermReminder] = useState(false);
 	const { register, handleSubmit, getValues } = useForm<Register>({});
 	const [isTaken, setTaken] = useState(false);
+	const [passVisible, setPassVisible] = useState(false);
+
 	async function Submit(data: Register) {
-		console.log(data.agreement);
 		if (await IsEmailTaken(data.email)) {
 			setTaken(true);
 		} else {
@@ -38,10 +40,10 @@ export default function ProfileSignUpPage() {
 			<h1
 				className={`text-7xl m-4 text-space-4 font-semibold cursor-default ${jockeOne.className}`}
 			>
-				ArtSpace
+				ARTSPACE
 			</h1>
 			<h1
-				className={`text-3xl m-3 font-semibold text-space-4 text-center ${jockeOne.className}`}
+				className={`text-3xl m-3 font-semibold text-space-4 text-center ${kreon.className}`}
 			>
 				Register
 			</h1>
@@ -101,7 +103,7 @@ export default function ProfileSignUpPage() {
 				/>
 				<Input
 					{...register("password", { required: true })}
-					type="password"
+					type={passVisible ? "text" : "password"}
 					label="Password"
 					validationBehavior="native"
 					minLength={8}
@@ -114,10 +116,21 @@ export default function ProfileSignUpPage() {
 						}
 					}}
 					isRequired
+					endContent={
+						<button
+							type="button"
+							className="text-space-1"
+							onClick={() => {
+								setPassVisible(!passVisible);
+							}}
+						>
+							{!passVisible ? <EyeIcon /> : <EyeOffIcon />}
+						</button>
+					}
 				/>
 				<Input
 					{...register("confirmPassword")}
-					type="password"
+					type={passVisible ? "text" : "password"}
 					label="Confirm Password"
 					validationBehavior="native"
 					validate={(value) => {
@@ -129,6 +142,17 @@ export default function ProfileSignUpPage() {
 					errorMessage={(validate) => {
 						return validate.validationErrors;
 					}}
+					endContent={
+						<button
+							type="button"
+							className="text-space-1"
+							onClick={() => {
+								setPassVisible(!passVisible);
+							}}
+						>
+							{!passVisible ? <EyeIcon /> : <EyeOffIcon />}
+						</button>
+					}
 				/>
 				<div>
 					<Checkbox
@@ -154,13 +178,13 @@ export default function ProfileSignUpPage() {
 						Already Have Account try to{" "}
 						<Link
 							href={"/account/signin"}
-							className="text-space-3 font-bold text-lg"
+							className="text-space-3 hover:text-space-4 duration-300 font-semibold text-lg"
 						>
 							Sign In
 						</Link>
 					</div>
 					<Button
-						className="bg-space-4 font-semibold text-space-1"
+						className="bg-space-2 font-semibold text-space-4"
 						size="lg"
 						type="submit"
 					>

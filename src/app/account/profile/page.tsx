@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { $Enums } from "@prisma/client";
-import { jockeOne } from "@/fonts/font";
-import { motion, type Variants } from "framer-motion";
+import { kreon } from "@/fonts/font";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import clsx from "clsx";
 import Image from "next/image";
-import PersonIcon from "@/icons/person";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MyButton } from "@/components/custom/myButton";
@@ -17,13 +16,13 @@ import { Input } from "@/components/ui/input";
 import { UpdateProfile } from "@/util/account/profile/update/action";
 import { GetProfileData } from "@/util/account/profile/action";
 import { useDebouncedCallback } from "use-debounce";
-
 type DataPengguna = {
-	nama: string;
-	email: string;
-	peran: $Enums.Peran;
+	nama?: string | null;
+	email?: string | null;
+	peran?: $Enums.Peran | null;
 	no_telepon?: bigint | null;
 	biograph?: string | null;
+	alamat?: string | null;
 };
 const dataObject = {
 	nama: "",
@@ -32,82 +31,36 @@ const dataObject = {
 	no_telepon: null,
 	biodata: "",
 };
-const profileCard: Variants = {
-	init: {
-		transition: { when: "beforeChildren", staggerChildren: 0.2 },
-	},
-};
-const profileParent: Variants = {
-	init: {
-		opacity: 1,
-		width: 700,
-		backgroundColor: "rgb(15 76 117 / 0)",
-		transition: {
-			duration: 1,
-			type: "spring",
-			bounce: 0.5,
-			stiffness: 50,
-		},
-	},
-};
-
-const profilePicture: Variants = {
-	init: {
-		x: 0,
-		transition: {
-			delay: 0.5,
-			duration: 1.5,
-			type: "spring",
-			bounce: 0.5,
-			stiffness: 50,
-		},
-	},
-};
-
-type bioGraphState = {
-	input: boolean;
-	button: "Edit" | "Save";
-};
 
 export default function MyProfilePage() {
 	const [profileData, setProfileData] = useState<DataPengguna>({
-		nama: "",
-		email: "",
+		nama: null,
+		email: null,
 		no_telepon: null,
-		peran: $Enums.Peran.PELANGGAN,
-		biograph: "",
+		peran: null,
+		biograph: null,
+		alamat: null,
 	});
-	const [profilePic, setProfilePic] = useState<string>("");
-	const [bioGraphState, setBioGraphState] = useState<bioGraphState>({
-		input: false,
-		button: "Edit",
+	const [bioGraphState, setBioGraphState] = useState({
+		disabled: true,
+		loading: false,
 	});
 	const UpdateDebounce = useDebouncedCallback((label: string, data: string) => {
 		UpdateProfile(label, data);
-	}, 3000);
+		setBioGraphState({ disabled: true, loading: false });
+	}, 1000);
 	const { register, getValues } = useForm<DataPengguna>();
 
+	const GetDataDebounce = useDebouncedCallback(async () => {
+		const data = await GetProfileData();
+		setProfileData(data ?? dataObject);
+	}, 50);
+
 	useEffect(() => {
-		const Profile = async () => {
-			const data = await GetProfileData();
-			setProfileData(data ?? dataObject);
-		};
-		Profile();
-
-		const getProfilePic = async () => {
-			const data = await fetch("/api/account/profile/picture/", {
-				method: "GET",
-				cache: "no-cache",
-			});
-			const blob = await data.blob();
-			const url = URL.createObjectURL(blob);
-			setProfilePic(url);
-		};
-
-		getProfilePic();
-	}, []);
+		GetDataDebounce();
+	}, [GetDataDebounce]);
 	return (
-		<section className="px-20 overflow-hidden">
+		<section className="px-40 overflow-hidden">
 			<motion.header
 				className="py-10 bg-space-1 overflow-clip text-nowrap"
 				initial={{
@@ -120,68 +73,62 @@ export default function MyProfilePage() {
 				}}
 			>
 				<h1
-					className={`text-3xl font-semibold text-space-4 ${jockeOne.className}`}
+					className={`text-3xl font-semibold text-space-4 ${kreon.className}`}
 				>
 					MY PROFILE
 				</h1>
 				<h2>General Setting your profile Data</h2>
 			</motion.header>
 			<main>
-				<motion.div animate={"init"} className="flex w-full">
-					<motion.div
-						className="flex flex-col space-y-7 flex-1"
-						variants={profileCard}
-					>
-						<FieldData label="Email" fieldData={profileData.email} />
-						<FieldData label="Nama" fieldData={profileData.nama} />
+				<div className="flex w-full">
+					<div className="flex flex-col space-y-7 flex-1">
+						<FieldData
+							label="Email"
+							fieldData={`${profileData.email ?? "Loading..."}  ( ${profileData.peran ?? "Loading..."} )`}
+						/>
+						<FieldData
+							label="Nama"
+							fieldData={profileData.nama ?? "Loading..."}
+						/>
 						<FieldData
 							label="No Telepon"
-							fieldData={profileData.no_telepon ?? "Belum ada data"}
+							fieldData={profileData.no_telepon ?? "Loading..."}
 						/>
-					</motion.div>
-					<motion.div initial={{ x: 500 }} variants={profilePicture}>
+						<FieldData
+							label="Alamat"
+							fieldData={profileData.alamat ?? "Loading..."}
+						/>
+					</div>
+					<div>
 						<Link
 							href={"./profile/update/profilepicture"}
 							className="size-80 me-10 flex items-center justify-center bg-space-4 text-space-4 group overflow-clip rounded-full relative border-2 border-space-1"
 						>
 							<Image
-								src={profilePic}
+								src={"/api/account/profile/picture"}
 								width={320}
 								height={320}
 								aria-hidden
 								alt=""
 								className="absolute text-3xl size-80 flex items-center justify-center z-[1]"
 							/>
-							<PersonIcon className="absolute size-52 fill-space-1/70" />
+
 							<div className="bg-space-2 w-full text-center self-end pt-3 pb-7 font-semibold opacity-0 group-hover:opacity-100 duration-250 bottom-0 z-[2]">
 								Edit Profile Picture
 							</div>
 						</Link>
-					</motion.div>
-				</motion.div>
-				<motion.div
-					className="my-10"
-					initial={{
-						height: 0,
-						opacity: 0,
-					}}
-					animate={{
-						height: "fit-content",
-						opacity: 1,
-						transition: {
-							delay: 1,
-							duration: 0.5,
-						},
-					}}
-				>
+					</div>
+				</div>
+				<div className="my-10">
 					<Label htmlFor="bio-graph">Bio Data</Label>
 					<Textarea
 						className={
 							"bg-space-2/30 border-space-4/10 h-56 disabled:bg-space-2/10"
 						}
+						key={profileData.biograph?.toString()}
 						id="bio-graph"
-						disabled={!bioGraphState.input}
-						defaultValue={profileData.biograph?.toString()}
+						disabled={bioGraphState.disabled}
+						defaultValue={profileData.biograph?.toString() ?? "Loading..."}
 						{...register("biograph", { required: false })}
 					/>
 					<div className="flex mt-5 gap-5">
@@ -189,23 +136,37 @@ export default function MyProfilePage() {
 							color="space2"
 							className="font-semibold"
 							onClick={() => {
-								if (bioGraphState.input) {
+								if (!bioGraphState.disabled) {
+									setBioGraphState({ disabled: true, loading: true });
 									UpdateDebounce(
 										"BioGraph",
 										getValues("biograph")?.toString() ?? "",
 									);
+								} else {
+									setBioGraphState({ disabled: false, loading: false });
 								}
-								setBioGraphState((value) => ({
-									input: !value.input,
-									button: !value.input ? "Save" : "Edit",
-								}));
 							}}
 						>
-							{bioGraphState.button}{" "}
-							{!bioGraphState.input ? <EditIcon /> : <SaveIcon />}
+							{!bioGraphState.loading ? (
+								bioGraphState.disabled ? (
+									<>
+										Edit Bio
+										<EditIcon />
+									</>
+								) : (
+									<>
+										Save Bio
+										<SaveIcon />
+									</>
+								)
+							) : (
+								<span className="h-full flex items-center text-transparent justify-center bg-gradient-to-r from-space-1 to-space-4 bg-clip-text animate-[btn-loading_3s_linear_infinite]">
+									Updating ...
+								</span>
+							)}
 						</MyButton>
 					</div>
-				</motion.div>
+				</div>
 			</main>
 		</section>
 	);
@@ -213,75 +174,55 @@ export default function MyProfilePage() {
 const FieldData = ({
 	label,
 	fieldData,
-}: { label: string; fieldData: string | bigint }) => {
-	const [disabled, setDisabled] = useState(true);
+}: { label: string; fieldData: string | bigint | null }) => {
 	const { register, getValues } = useForm();
-	const [loading, setLoading] = useState(false);
+	const [btnState, setBtnState] = useState({
+		disabled: true,
+		loading: false,
+	});
 	const UpdateDebounce = useDebouncedCallback((label: string, data: string) => {
 		UpdateProfile(label, data);
-		setLoading(false);
+		setBtnState({ disabled: true, loading: false });
 	}, 3000);
 	return (
-		<motion.div
-			initial={{ opacity: 0, width: 0 }}
-			variants={profileParent}
-			className="p-1 flex items-center bg-space-2 rounded-xl overflow-clip gap-5"
-		>
+		<div className="p-1 flex items-center me-32 rounded-xl overflow-clip gap-5">
 			<div className="gap-3 w-full flex flex-col">
 				<div>{label}</div>
-				<motion.div
-					key={fieldData.toString()}
+				<div
+					key={fieldData?.toString()}
 					className={clsx(
 						"w-full flex-1 font-semibold text-xl text-clip overflow-clip text-nowrap",
 						{ "text-red-500": fieldData === "Belum ada data" },
 					)}
-					initial={{
-						width: "0%",
-					}}
-					animate={{
-						width: "100%",
-					}}
 				>
-					<motion.div
-						className={clsx("rounded-md", {
-							"bg-gradient-to-r from-space-4/10": loading,
-						})}
-						animate={{
-							backgroundPositionX: "1000px",
-							transition: {
-								duration: 5,
-								repeat: Number.POSITIVE_INFINITY,
-								ease: "linear",
-							},
-						}}
-					>
-						{label === "Email" ? (
-							fieldData.toString()
-						) : (
-							<Input
-								className="disabled:bg-space-2/10 bg-space-2 duration-300"
-								defaultValue={fieldData.toString()}
-								disabled={disabled}
-								{...register(label)}
-							/>
-						)}
-					</motion.div>
-				</motion.div>
+					{label === "Email" || label === "Jenis Akun" ? (
+						fieldData?.toString()
+					) : (
+						<Input
+							className="disabled:bg-space-2/10 bg-space-2 duration-300"
+							defaultValue={fieldData?.toString()}
+							disabled={btnState.disabled}
+							type={label === "No Telepon" ? "number" : "text"}
+							{...register(label)}
+						/>
+					)}
+				</div>
 			</div>
 			{label !== "Email" && (
 				<MyButton
 					color="space2"
 					className="font-semibold self-end overflow-clip"
 					onClick={() => {
-						if (!disabled) {
-							setLoading(true);
+						if (!btnState.disabled) {
+							setBtnState({ disabled: true, loading: true });
 							UpdateDebounce(label, getValues(label));
+						} else {
+							setBtnState({ disabled: false, loading: false });
 						}
-						setDisabled(!disabled);
 					}}
 				>
-					{!loading ? (
-						!disabled ? (
+					{!btnState.loading ? (
+						!btnState.disabled ? (
 							<>
 								Save <SaveIcon />
 							</>
@@ -291,20 +232,12 @@ const FieldData = ({
 							</>
 						)
 					) : (
-						<motion.div
-							className="h-full flex items-center justify-center bg-gradient-to-r from-space-1 to-space-4 bg-clip-text"
-							animate={{
-								backgroundPositionX: "1000px",
-								transition: {
-									duration: 10,
-								},
-							}}
-						>
+						<span className="h-full flex items-center text-transparent justify-center bg-gradient-to-r from-space-1 to-space-4 bg-clip-text animate-[btn-loading_3s_linear_infinite]">
 							Updating ...
-						</motion.div>
+						</span>
 					)}
 				</MyButton>
 			)}
-		</motion.div>
+		</div>
 	);
 };

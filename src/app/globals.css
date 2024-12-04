@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes admin-badge {
+  to {
+    @apply bg-[400px];
+  }
+}
+
+@keyframes btn-loading {
+  to {
+    @apply bg-[200px];
+  }
+}
+
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;

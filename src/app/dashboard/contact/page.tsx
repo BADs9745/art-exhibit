@@ -35,7 +35,11 @@ export default function ContactPage() {
 			</motion.button>
 			<div>
 				Ayam Goreng
-				<motion.div animate={"hilang"} variants={divVariant2}>
+				<motion.div
+					animate={"hilang"}
+					variants={divVariant2}
+					className={"w-20"}
+				>
 					<motion.div variants={divVariant}>Ayam</motion.div>
 					<motion.div variants={divVariant}>Bebek</motion.div>
 				</motion.div>

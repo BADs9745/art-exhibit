@@ -6,8 +6,9 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import WarningnIcon from "@/icons/warning";
-import { jockeOne } from "@/fonts/font";
+import { jockeOne, kreon } from "@/fonts/font";
 import { SignIn } from "@/util/account/profile/action";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 type formField = {
 	email: string;
 	password: string;
@@ -22,12 +23,12 @@ export default function ProfileSignInPage() {
 	});
 
 	const Submit: SubmitHandler<formField> = async (data) => {
-		const userData = (await SignIn(data)) ?? { isSuccess: false };
-		if (!userData.isSuccess) {
+		const userData = await SignIn(data);
+		if (userData) {
 			setFailed(true);
 		}
 	};
-
+	const [passVisible, setPassVisible] = useState(false);
 	return (
 		<section className="flex flex-col justify-center items-center w-screen h-screen overflow-scroll">
 			<h1
@@ -36,7 +37,7 @@ export default function ProfileSignInPage() {
 				ARTSPACE
 			</h1>
 			<h2
-				className={`text-5xl mt-10 font-semibold text-slate-200 text-center ${jockeOne.className}`}
+				className={`text-5xl mt-10 font-semibold text-slate-200 text-center ${kreon.className}`}
 			>
 				Login
 			</h2>
@@ -45,7 +46,22 @@ export default function ProfileSignInPage() {
 				onSubmit={handleSubmit(Submit)}
 			>
 				<Input type="email" label="Email" {...register("email")} />
-				<Input type="password" label="Password" {...register("password")} />
+				<Input
+					type={passVisible ? "text" : "password"}
+					label="Password"
+					{...register("password")}
+					endContent={
+						<button
+							type="button"
+							className="text-space-1"
+							onClick={() => {
+								setPassVisible(!passVisible);
+							}}
+						>
+							{!passVisible ? <EyeIcon /> : <EyeOffIcon />}
+						</button>
+					}
+				/>
 
 				{failed && (
 					<Alert
@@ -58,7 +74,10 @@ export default function ProfileSignInPage() {
 					</Alert>
 				)}
 
-				<Button className="bg-space-2 p-6 text-xl text-space-4" type="submit">
+				<Button
+					className="bg-space-2 p-6 text-xl text-space-4 font-semibold"
+					type="submit"
+				>
 					Sign In
 				</Button>
 				<div className="px-3">

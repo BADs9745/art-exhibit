@@ -2,10 +2,9 @@
 
 import { PrismaClient } from "@prisma/client";
 import { createHash, randomUUID } from "node:crypto";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import type { Register } from "@/app/account/signup/page";
-
+import { redirect } from "next/navigation";
 export async function SignUp(data: Register) {
 	const prisma = new PrismaClient();
 
@@ -54,9 +53,7 @@ export async function IsEmailTaken(emailchk: string): Promise<boolean> {
 export async function SignIn({
 	email,
 	password,
-}: { email: string; password: string }): Promise<{
-	isSuccess: boolean;
-}> {
+}: { email: string; password: string }) {
 	const prisma = new PrismaClient();
 
 	const hashPassword = createHash("sha256").update(password).digest("base64");
@@ -88,9 +85,13 @@ export async function SignIn({
 		},
 	});
 	prisma.$disconnect();
-	await cookies().set("login_token", token.login_token ?? "", { path: "/" });
-	redirect("/dashboard/");
-	return { isSuccess: true };
+	await cookies().set("login_token", token.login_token ?? "", {
+		path: "/",
+		sameSite: "strict",
+		secure: true,
+	});
+	redirect("/");
+	return true;
 }
 
 export async function LogOut() {
@@ -99,36 +100,58 @@ export async function LogOut() {
 }
 
 export async function IsLogin() {
-	return cookies().get("login_token")?.value;
+	const prisma = new PrismaClient();
+	try {
+		const isExist = await prisma.pengguna.findUnique({
+			where: {
+				login_token: cookies().get("login_token")?.value ?? "",
+			},
+			select: { login_token: true },
+		});
+		if (isExist === null) {
+			cookies().delete("login_token");
+			return;
+		}
+		return isExist?.login_token;
+	} catch (error) {
+		if (error) {
+			cookies().delete("login_token");
+			redirect("/");
+		}
+	}
 }
 
 export async function UserProfile() {
 	const prisma = new PrismaClient();
 
 	const login_token = await IsLogin();
-	const profileData = await prisma.pengguna.findUnique({
-		where: { login_token: login_token },
-		select: {
-			nama: true,
-			email: true,
-			peran: true,
-		},
-	});
-	prisma.$disconnect();
-	return profileData;
+	if (login_token) {
+		const profileData = await prisma.pengguna.findUnique({
+			where: { login_token: login_token ?? "" },
+			select: {
+				nama: true,
+				email: true,
+				peran: true,
+			},
+		});
+		prisma.$disconnect();
+		return profileData;
+	}
+	return null;
 }
 
 export async function GetProfileData() {
 	const login_token = await IsLogin();
 	const prisma = new PrismaClient();
 	const myProfile = await prisma.pengguna.findUnique({
-		where: { login_token: login_token },
+		where: { login_token: login_token ?? "" },
 		select: {
 			nama: true,
 			email: true,
 			peran: true,
 			no_telepon: true,
 			biograph: true,
+			alamat: true,
 		},
 	});
 

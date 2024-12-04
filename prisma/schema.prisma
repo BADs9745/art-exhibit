@@ -14,23 +14,23 @@ datasource db {
 }
 
 model Pengguna {
-  id               String         @id @default(cuid())
-  peran            Peran          @default(PELANGGAN)
-  nama             String
-  email            String         @unique
-  kata_sandi       String
-  no_telepon       BigInt?
-  biograph         String?
-  dibuat_pada      DateTime       @default(now())
-  diperbarui_pada  DateTime       @updatedAt
-  profil_seniman   ProfilSeniman? @relation(fields: [profil_SenimanId], references: [id])
-  profil_SenimanId String?
-  Transaksi        Transaksi[]
-  Ulasan           Ulasan[]
-  pesan_dikirim    Pesan[]        @relation("pengirim")
-  pesan_diterima   Pesan[]        @relation("penerima")
-  login_token      String?        @unique
-  foto_profil      Bytes?
+  id              String         @id @default(cuid())
+  peran           Peran          @default(PELANGGAN)
+  nama            String
+  email           String         @unique
+  kata_sandi      String
+  no_telepon      BigInt?
+  biograph        String?
+  alamat          String?
+  dibuat_pada     DateTime       @default(now())
+  diperbarui_pada DateTime       @updatedAt
+  Transaksi       Transaksi[]
+  Ulasan          Ulasan[]
+  pesan_dikirim   Pesan[]        @relation("pengirim")
+  pesan_diterima  Pesan[]        @relation("penerima")
+  login_token     String?        @unique
+  foto_profil     Bytes?
+  ProfilSeniman   ProfilSeniman? @relation("profil_seniman")
 }
 
 enum Peran {
@@ -41,12 +41,10 @@ enum Peran {
 
 model ProfilSeniman {
   id               String      @id @default(cuid())
-  nama             String
-  biografi         String?
-  deskripsi        String
   dibuat           DateTime    @default(now())
   diperbarui       DateTime    @updatedAt
-  Pengguna         Pengguna[]
+  Pengguna         Pengguna    @relation("profil_seniman", fields: [penggunaId], references: [id])
+  penggunaId       String      @unique
   KaryaSeni        KaryaSeni[] @relation("main_artist")
   Collab           KaryaSeni[] @relation("collab_artist")
   Background_Image Bytes?
@@ -56,8 +54,8 @@ model KaryaSeni {
   id               String          @id @default(cuid())
   judul            String
   deskripsi        String
-  harga            Decimal
-  gambar_url       String
+  harga            Decimal?
+  gambar_url       Bytes
   status           Status          @default(KOSONG)
   Profil_Seniman   ProfilSeniman?  @relation("main_artist", fields: [profil_SenimanId], references: [id])
   Seniman_tambahan ProfilSeniman[] @relation("collab_artist")

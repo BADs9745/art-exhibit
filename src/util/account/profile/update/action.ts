@@ -26,6 +26,16 @@ export const UpdateProfile = async (label: string, data: string) => {
 			},
 		});
 	}
+	if (label === "Alamat") {
+		await prisma.pengguna.update({
+			data: {
+				alamat: data,
+			},
+			where: {
+				login_token: login_token,
+			},
+		});
+	}
 	if (label === "BioGraph") {
 		await prisma.pengguna.update({
 			data: { biograph: data === "" ? null : data },
