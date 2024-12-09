@@ -18,6 +18,7 @@ import NotificationFillIcon from "@/icons/notification-fill";
 import { LogOut, UserProfile } from "@/util/account/profile/action";
 import clsx from "clsx";
 import { useDebouncedCallback } from "use-debounce";
+import type { ClassNameValue } from "tailwind-merge";
 
 type avatarMenuData = {
 	peran: $Enums.Peran;
@@ -25,7 +26,10 @@ type avatarMenuData = {
 	email: string;
 };
 
-export const AvatarPicture = ({ userId }: { userId?: string }) => {
+export const AvatarPicture = ({
+	userId,
+	className,
+}: { userId?: string; className?: ClassNameValue }) => {
 	const [profileImg, setProfileImg] = useState<string>("");
 	const searchParams = new URLSearchParams();
 	const GetAvatarImageDebounce = useDebouncedCallback(async () => {
@@ -46,7 +50,7 @@ export const AvatarPicture = ({ userId }: { userId?: string }) => {
 		GetAvatarImageDebounce();
 	}, [GetAvatarImageDebounce]);
 	return (
-		<Avatar className="size-12 ring-space-4 ring-1">
+		<Avatar className={`size-12 ring-space-4 ring-1 ${className}`}>
 			<AvatarImage alt="No Image" src={profileImg} />
 		</Avatar>
 	);

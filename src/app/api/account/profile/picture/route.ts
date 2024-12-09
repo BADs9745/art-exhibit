@@ -26,6 +26,7 @@ export async function GET(req: Request) {
 				headers: { "Content-Type": "image/webp" },
 			});
 		}
+		prisma.$disconnect();
 		return new Response(bufferPic.foto_profil, {
 			headers: { "Content-Type": "image/webp" },
 		});
@@ -34,6 +35,7 @@ export async function GET(req: Request) {
 			const defaultPicture = fs.readFileSync(
 				"src/public/assets/img/default-profile-picture.jpg",
 			);
+			prisma.$disconnect();
 			return new Response(defaultPicture, {
 				headers: { "Content-Type": "image/webp" },
 			});
@@ -76,6 +78,7 @@ export async function POST(req: Request) {
 				status: 500,
 			};
 		}
+	prisma.$disconnect();
 	return Response.json(res);
 }
 

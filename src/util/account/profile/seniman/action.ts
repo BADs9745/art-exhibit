@@ -1,35 +1,100 @@
 "use server";
 import type { Data } from "@/app/account/signup/seniman/page";
 import { $Enums, PrismaClient } from "@prisma/client";
+import type { Decimal } from "@prisma/client/runtime/library";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function GetSenimanProfile() {
+export type senimanProfile = {
+	nama: string;
+	ProfilSeniman: {
+		_count: {
+			KaryaSeni: number;
+		};
+		KaryaSeni: {
+			id: string;
+			judul: string;
+			deskripsi: string;
+			harga: Decimal | null;
+		}[];
+		id: string;
+	} | null;
+	email: string;
+	biograph: string | null;
+	alamat: string | null;
+	no_telepon: bigint | null;
+} | null;
+
+export async function GetSenimanProfile({ userId }: { userId?: string }) {
 	const login_token = cookies().get("login_token")?.value;
 	const prisma = new PrismaClient();
-	const seniman = await prisma.pengguna.findUnique({
-		where: { login_token: login_token ?? "" },
-		select: {
-			ProfilSeniman: {
+	try {
+		if (userId) {
+			const seniman = await prisma.pengguna.findUniqueOrThrow({
+				where: { id: userId ?? "" },
 				select: {
-					id: true,
-					KaryaSeni: {
+					ProfilSeniman: {
 						select: {
 							id: true,
-							harga: true,
-							deskripsi: true,
-							judul: true,
-							Profil_Seniman: {
-								select: { Pengguna: { select: { nama: true } } },
+							_count: {
+								select: {
+									KaryaSeni: true,
+								},
+							},
+							KaryaSeni: {
+								select: {
+									id: true,
+									harga: true,
+									deskripsi: true,
+									judul: true,
+								},
+							},
+						},
+					},
+					nama: true,
+					email: true,
+					alamat: true,
+					biograph: true,
+					no_telepon: true,
+				},
+			});
+			prisma.$disconnect();
+			return { ...seniman, status: 200, error: null };
+		}
+		const seniman = await prisma.pengguna.findUnique({
+			where: { login_token: login_token ?? "" },
+			select: {
+				ProfilSeniman: {
+					select: {
+						id: true,
+						_count: {
+							select: {
+								KaryaSeni: true,
+							},
+						},
+						KaryaSeni: {
+							select: {
+								id: true,
+								harga: true,
+								deskripsi: true,
+								judul: true,
 							},
 						},
 					},
 				},
+				nama: true,
+				email: true,
+				alamat: true,
+				biograph: true,
+				no_telepon: true,
 			},
-		},
-	});
-	prisma.$disconnect();
-	return seniman;
+		});
+		prisma.$disconnect();
+		return { ...seniman, status: 200, error: null };
+	} catch (error) {
+		prisma.$disconnect();
+		console.log(`${error}`);
+	}
 }
 
 export async function SenimanVerify() {

@@ -1,24 +1,38 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { MyButton as Button } from "@/components/custom/myButton";
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { UserRoundPlus } from "lucide-react";
 import { Redirect } from "@/util/account/profile/update/action";
+import { useDebouncedCallback } from "use-debounce";
 
 type Data = {
-	[key: string]: FileList | string;
-	image: FileList;
+	image: Blob[] | File[];
 };
 
 export default function ProfilePicturePage() {
 	const { register, handleSubmit, watch } = useForm<Data>();
-	const preview = useRef<HTMLDivElement>(null);
-
 	const handleChange = watch("image");
+	const [Img, setImg] = useState("");
 
-	if (preview.current) {
-		preview.current.style.backgroundImage = `url(${URL.createObjectURL(handleChange[0])})`;
-	}
+	const GetCurrentImg = useDebouncedCallback(async () => {
+		const res = await fetch("/api/account/profile/picture/");
+		const blob = await res.blob();
+		setImg(URL.createObjectURL(blob));
+	});
+	const SetCurrentImg = useDebouncedCallback(async () => {
+		const blob = await handleChange[0];
+		if (blob) {
+			setImg(URL.createObjectURL(blob));
+		}
+	});
+	useEffect(() => {
+		if (handleChange) {
+			SetCurrentImg();
+		} else {
+			GetCurrentImg();
+		}
+	}, [GetCurrentImg, handleChange, SetCurrentImg]);
 
 	const onSubmit = async (data: Data) => {
 		const formData = new FormData();
@@ -30,7 +44,9 @@ export default function ProfilePicturePage() {
 			method: "POST",
 			body: formData,
 		});
-
+		if (!handleChange[0]) {
+			Redirect("/account/profile");
+		}
 		const res = await fetch(req);
 		if (res.status === 200) {
 			Redirect("/account/profile");
@@ -45,7 +61,10 @@ export default function ProfilePicturePage() {
 					className="p-10 flex items-center flex-col"
 					onSubmit={handleSubmit(onSubmit)}
 				>
-					<label htmlFor="image" className="flex items-center justify-center">
+					<label
+						htmlFor="image"
+						className="flex items-center justify-center rounded-full overflow-clip size-80 relative"
+					>
 						<input
 							type="file"
 							id="image"
@@ -55,8 +74,8 @@ export default function ProfilePicturePage() {
 						/>
 						<UserRoundPlus className="size-[200px] absolute self-center" />
 						<div
-							className="size-[500px] bg-space-2/10 rounded-full bg-cover bg-center z-10"
-							ref={preview}
+							className="size-full bg-cover z-10 bg-center"
+							style={{ backgroundImage: `url(${Img})` }}
 						/>
 					</label>
 					<Button

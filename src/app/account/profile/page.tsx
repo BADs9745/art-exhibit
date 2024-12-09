@@ -6,7 +6,6 @@ import { kreon } from "@/fonts/font";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import clsx from "clsx";
-import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MyButton } from "@/components/custom/myButton";
@@ -16,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { UpdateProfile } from "@/util/account/profile/update/action";
 import { GetProfileData } from "@/util/account/profile/action";
 import { useDebouncedCallback } from "use-debounce";
+import { AvatarPicture } from "@/components/custom/profile";
 type DataPengguna = {
 	nama?: string | null;
 	email?: string | null;
@@ -101,17 +101,10 @@ export default function MyProfilePage() {
 					</div>
 					<div>
 						<Link
-							href={"./profile/update/profilepicture"}
+							href={"/account/profile/update/profilepicture"}
 							className="size-80 me-10 flex items-center justify-center bg-space-4 text-space-4 group overflow-clip rounded-full relative border-2 border-space-1"
 						>
-							<Image
-								src={"/api/account/profile/picture"}
-								width={320}
-								height={320}
-								aria-hidden
-								alt=""
-								className="absolute text-3xl size-80 flex items-center justify-center z-[1]"
-							/>
+							<AvatarPicture className={"size-full absolute"} />
 
 							<div className="bg-space-2 w-full text-center self-end pt-3 pb-7 font-semibold opacity-0 group-hover:opacity-100 duration-250 bottom-0 z-[2]">
 								Edit Profile Picture
